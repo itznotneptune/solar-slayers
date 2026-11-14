@@ -38,8 +38,21 @@ public final class ShopTracker {
 
     private ShopTracker() {}
 
+    /**
+     * A slayer shop screen. Since the 2026-11-15 menu update the items sit in "Sword Upgrades", "Armor Upgrades" and
+     * "Throwables" under the main "Upgrade Shop"; every one of them shows the Slayer Essence balance item, so that is
+     * what identifies a shop screen, whatever it is titled.
+     */
     public static boolean isShop(AbstractContainerScreen<?> screen) {
-        return Txt.norm(screen.getTitle().getString()).contains("upgrade shop");
+        String title = Txt.norm(screen.getTitle().getString());
+        if (title.contains("upgrade")) return true;
+        for (Slot s : screen.getMenu().slots) {
+            if (s.container instanceof Inventory) continue;
+            for (String l : lore(s.getItem())) {
+                if (BALANCE.matcher(l).find()) return true;
+            }
+        }
+        return false;
     }
 
     /** @return true to cancel the click (it was a tracking toggle). */
@@ -53,24 +66,48 @@ public final class ShopTracker {
         return true;
     }
 
-    /** Reads the exact essence balance while the shop is open. */
+    /**
+     * While a shop screen is open: reads the exact essence balance, and refreshes tracked items' requirements from the
+     * live lore (so the ✔/✘ and any requirement the server changes stay current).
+     */
     public static void tick(Minecraft mc) {
         if (!(mc.screen instanceof AbstractContainerScreen<?> cs) || !isShop(cs)) return;
+        SlayersConfig cfg = SlayersConfig.get();
+        boolean changed = false;
         for (Slot s : cs.getMenu().slots) {
             if (s.container instanceof Inventory) continue;
-            for (String l : lore(s.getItem())) {
+            List<String> lore = lore(s.getItem());
+            for (String l : lore) {
                 Matcher m = BALANCE.matcher(l);
                 if (m.find()) {
                     double v = Txt.num(m.group(1));
-                    SlayersConfig cfg = SlayersConfig.get();
                     if (v != cfg.essence) {
                         cfg.essence = v;
-                        SlayersConfig.save();
+                        changed = true;
                     }
-                    return;
+                }
+            }
+            if (cfg.tracked.isEmpty() || lore.stream().noneMatch(l -> l.equals("Requires:"))) continue;
+            String name = itemName(s.getItem());
+            for (TrackedItem t : cfg.tracked) {
+                if (!t.name.equals(name)) continue;
+                List<Requirement> fresh = parse(lore);
+                if (!same(fresh, t.requirements)) {
+                    t.requirements = fresh;
+                    changed = true;
                 }
             }
         }
+        if (changed) SlayersConfig.save();
+    }
+
+    private static boolean same(List<Requirement> a, List<Requirement> b) {
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); i++) {
+            Requirement x = a.get(i), y = b.get(i);
+            if (x.kind != y.kind || x.need != y.need || x.metInShop != y.metInShop || !x.target.equals(y.target)) return false;
+        }
+        return true;
     }
 
     public static List<String> lore(ItemStack stack) {
@@ -133,9 +170,13 @@ public final class ShopTracker {
                 r.kind = Requirement.Kind.ITEM;
                 r.target = m.group(2).trim();
                 r.need = Long.parseLong(m.group(1).replace(",", ""));
-            } else {
-                r.kind = Requirement.Kind.OTHER;
+            } else if (!t.isEmpty()) {
+                // No count: one specific item to own, e.g. the previous tier ("Moonhide Helmet") or a boss drop ("Star Core").
+                r.kind = Requirement.Kind.OWN;
                 r.target = t;
+                r.need = 1;
+            } else {
+                continue;
             }
             out.add(r);
         }
@@ -151,7 +192,7 @@ public final class ShopTracker {
                 yield lvl == null ? -1 : lvl;
             }
             case ESSENCE -> essence();
-            case ITEM -> count(mc, r.target);
+            case ITEM, OWN -> count(mc, r.target);
             case OTHER -> -1;
         };
     }
@@ -170,8 +211,11 @@ public final class ShopTracker {
 
     private static int count(Minecraft mc, String name) {
         if (mc.player == null) return -1;
+        Inventory inv = mc.player.getInventory();
         int n = 0;
-        for (ItemStack s : mc.player.getInventory().getNonEquipmentItems()) {
+        // whole inventory including worn armour and offhand: the previous armour tier is often being worn
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack s = inv.getItem(i);
             if (!s.isEmpty() && itemName(s).equalsIgnoreCase(name)) n += s.getCount();
         }
         return n;
@@ -179,6 +223,8 @@ public final class ShopTracker {
 
     public static boolean met(Requirement r, double have) {
         if (have < 0) return r.metInShop;
+        // an owned item may be in a vault rather than the inventory, so trust the shop's ✔ for those
+        if (r.kind == Requirement.Kind.OWN) return have >= 1 || r.metInShop;
         return have >= r.need;
     }
 }
