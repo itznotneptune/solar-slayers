@@ -10,10 +10,11 @@ Each supported Minecraft version has its own branch:
 |---|---|---|
 | `1.21.11` (default) | 1.21.11 | 0.141.6+1.21.11 |
 | `1.21.9` | 1.21.9 – 1.21.10 | 0.134.1+1.21.9 |
+| `26.3` | 26.3 | 0.166.2+26.3 |
 
-The jar name includes the Minecraft version, e.g. `solarslayers-0.1.0+1.21.11.jar`. Version-specific code lives in
-`src/client/java/dev/solarslayers/compat/Compat.java`; everything else is identical across branches, so fixes are
-made on `1.21.11` and merged into the other branches.
+The jar name includes the Minecraft version, e.g. `solarslayers-0.1.0+1.21.11.jar`. Fixes are made on `1.21.11` and
+merged into the other branches. On `1.21.9` only `compat/Compat.java` differs. `26.3` is an unobfuscated version with
+many renamed Minecraft APIs, so its branch carries its own port of the code and needs Java 25 to play.
 
 ## Features
 - **Boss highlight**: your slayer boss is drawn full-bright in a solid colour you pick. "Only my boss" uses the
@@ -35,7 +36,7 @@ Open Mod GUI (unbound by default). HUD panels are moved in General → Edit HUD.
 Put the jar for your Minecraft version and [Fabric API](https://modrinth.com/mod/fabric-api) in your Fabric mods folder.
 
 ## Build
-Gradle must run on **Java 25** (Loom 1.18 needs it); the mod targets Java 21. Set `JAVA_HOME` to a JDK 25, or set
+Gradle must run on **Java 25** (Loom needs it); the 1.21.x branches target Java 21, the 26.3 branch Java 25. Set `JAVA_HOME` to a JDK 25, or set
 `org.gradle.java.home` in `gradle.properties`, then run `./gradlew build`. The jar is written to `build/libs/`.
 
 ## Development notes
