@@ -5,3 +5,5 @@ out/
 .idea/
 *.iml
 recordings/
+__pycache__/
+*.pyc
