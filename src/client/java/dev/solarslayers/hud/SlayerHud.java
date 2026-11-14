@@ -12,7 +12,7 @@ import dev.solarslayers.util.Txt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +69,9 @@ public final class SlayerHud {
 
     private SlayerHud() {}
 
-    public static void render(GuiGraphics g, DeltaTracker delta) {
+    public static void render(GuiGraphicsExtractor g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.hideGui || mc.player == null) return;
+        if (mc.player == null) return;
         SlayersConfig cfg = SlayersConfig.get();
         boolean inSlayer = SidebarState.INSTANCE.inSlayer;
         for (Element e : Element.values()) {
@@ -83,7 +83,7 @@ public final class SlayerHud {
     }
 
     /** Draws a panel; returns its unscaled size {w, h}. */
-    public static int[] draw(GuiGraphics g, Font font, HudPos pos, List<Line> lines) {
+    public static int[] draw(GuiGraphicsExtractor g, Font font, HudPos pos, List<Line> lines) {
         int[] size = measure(font, lines);
         g.pose().pushMatrix();
         g.pose().translate(pos.x, pos.y);
@@ -93,7 +93,7 @@ public final class SlayerHud {
         int y = PAD;
         for (int i = 0; i < lines.size(); i++) {
             Line l = lines.get(i);
-            g.drawString(font, l.text(), PAD + 3, y, l.color(), true);
+            g.text(font, l.text(), PAD + 3, y, l.color(), true);
             y += LINE;
             if (l.hasBar()) {
                 Draw.bar(g, PAD + 3, y - 1, size[0] - PAD * 2 - 3, BAR_H, l.bar(), l.barColor());

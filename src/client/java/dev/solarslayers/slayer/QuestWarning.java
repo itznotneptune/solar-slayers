@@ -39,9 +39,9 @@ public final class QuestWarning {
 
     public static void show() {
         Minecraft mc = Minecraft.getInstance();
-        mc.gui.setTimes(5, 40, 10);
-        mc.gui.setTitle(Component.literal("You don't have an active slayer quest!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-        mc.gui.setSubtitle(Component.literal("Start one with ").withStyle(ChatFormatting.WHITE)
+        mc.gui.hud.setTimes(5, 40, 10);
+        mc.gui.hud.setTitle(Component.literal("You don't have an active slayer quest!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+        mc.gui.hud.setSubtitle(Component.literal("Start one with ").withStyle(ChatFormatting.WHITE)
                 .append(Component.literal("/slayer").withStyle(ChatFormatting.WHITE, ChatFormatting.BOLD)));
         if (SlayersConfig.get().questWarningSound) {
             mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING.value(), 1.6f, 1.0f));

@@ -1,6 +1,6 @@
 package dev.solarslayers.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** Shared look: dark translucent panels, a warm "solar" accent, soft rounded corners. */
 public final class Draw {
@@ -23,7 +23,7 @@ public final class Draw {
     private Draw() {}
 
     /** A filled rectangle with 1px-cut corners, which reads as rounded at GUI scale. */
-    public static void round(GuiGraphics g, int x1, int y1, int x2, int y2, int color) {
+    public static void round(GuiGraphicsExtractor g, int x1, int y1, int x2, int y2, int color) {
         if (x2 - x1 < 3 || y2 - y1 < 3) {
             g.fill(x1, y1, x2, y2, color);
             return;
@@ -33,8 +33,8 @@ public final class Draw {
         g.fill(x2 - 1, y1 + 1, x2, y2 - 1, color);
     }
 
-    /** 1px rectangle outline (GuiGraphics.renderOutline is not in every 1.21.x). */
-    public static void outline(GuiGraphics g, int x, int y, int w, int h, int color) {
+    /** 1px rectangle outline (GuiGraphicsExtractor.renderOutline is not in every 1.21.x). */
+    public static void outline(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
         g.fill(x, y, x + w, y + 1, color);
         g.fill(x, y + h - 1, x + w, y + h, color);
         g.fill(x, y + 1, x + 1, y + h - 1, color);
@@ -42,13 +42,13 @@ public final class Draw {
     }
 
     /** Rounded panel with a 1px border. */
-    public static void panel(GuiGraphics g, int x1, int y1, int x2, int y2, int fill, int border) {
+    public static void panel(GuiGraphicsExtractor g, int x1, int y1, int x2, int y2, int fill, int border) {
         round(g, x1, y1, x2, y2, border);
         round(g, x1 + 1, y1 + 1, x2 - 1, y2 - 1, fill);
     }
 
     /** Pill-shaped bar (progress bars, toggle tracks). */
-    public static void pill(GuiGraphics g, int x1, int y1, int x2, int y2, int color) {
+    public static void pill(GuiGraphicsExtractor g, int x1, int y1, int x2, int y2, int color) {
         int h = y2 - y1;
         if (h <= 4) {
             round(g, x1, y1, x2, y2, color);
@@ -61,7 +61,7 @@ public final class Draw {
         g.fill(x2 - 1, y1 + 2, x2, y2 - 2, color);
     }
 
-    public static void bar(GuiGraphics g, int x, int y, int w, int h, double frac, int color) {
+    public static void bar(GuiGraphicsExtractor g, int x, int y, int w, int h, double frac, int color) {
         pill(g, x, y, x + w, y + h, 0xFF2A2C38);
         double f = Double.isNaN(frac) ? 0 : Math.max(0, Math.min(1, frac));
         int fw = (int) Math.round(w * f);

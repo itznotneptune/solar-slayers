@@ -11,10 +11,10 @@ import dev.solarslayers.slayer.QuestWarning;
 import dev.solarslayers.slayer.ShopTracker;
 import dev.solarslayers.slayer.SidebarState;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,7 +23,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +45,12 @@ public final class SlayersClient implements ClientModInitializer {
     public void onInitializeClient() {
         SlayersConfig.load();
 
-        openKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-                "key.solarslayers.open_gui", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, CATEGORY));
+        openKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.solarslayers.open_gui", InputConstants.Type.KEYBOARD, InputConstants.UNKNOWN.getValue(), CATEGORY));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, ctx) -> {
             for (String name : new String[] {"slayer+", "slayerplus"}) {
-                dispatcher.register(ClientCommandManager.literal(name).executes(c -> {
+                dispatcher.register(ClientCommands.literal(name).executes(c -> {
                     openPending = true; // opened next tick, after the chat screen has closed
                     return 1;
                 }));
@@ -70,7 +70,7 @@ public final class SlayersClient implements ClientModInitializer {
         while (openKey.consumeClick()) openPending = true;
         if (openPending && mc.player != null) {
             openPending = false;
-            mc.setScreen(new ConfigScreen(mc.screen));
+            mc.gui.setScreen(new ConfigScreen(mc.gui.screen()));
         }
 
         if (mc.player != null && mc.level != null) {

@@ -4,7 +4,7 @@ import dev.solarslayers.config.SlayersConfig;
 import dev.solarslayers.config.SlayersConfig.HudPos;
 import dev.solarslayers.hud.SlayerHud;
 import dev.solarslayers.hud.SlayerHud.Element;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -35,12 +35,12 @@ public final class HudEditorScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mx, int my, float delta) {
+    public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float delta) {
         // no blur: the point is to see the panels over the game
     }
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         g.fill(0, 0, width, height, 0x40000000);
         for (Element e : Element.values()) {
             if (!e.enabled()) continue;
@@ -50,13 +50,13 @@ public final class HudEditorScreen extends Screen {
             Draw.outline(g, b[0] - 1, b[1] - 1, b[2] + 2, b[3] + 2, hover ? Draw.ACCENT : 0x80FFFFFF);
             if (hover) {
                 String tag = e.label + "  " + Math.round(e.pos().scale * 100) + "%";
-                g.drawString(font, tag, b[0], b[1] - 11, Draw.GOLD, true);
+                g.text(font, tag, b[0], b[1] - 11, Draw.GOLD, true);
             }
         }
         String help = "Drag to move  •  Scroll to resize  •  Right-click to reset size  •  Esc to go back";
         int w = font.width(help) + 16;
         Draw.panel(g, (width - w) / 2, height - 26, (width + w) / 2, height - 8, 0xE0121318, Draw.BORDER);
-        g.drawCenteredString(font, help, width / 2, height - 21, Draw.MUTED);
+        g.centeredText(font, help, width / 2, height - 21, Draw.MUTED);
     }
 
     private Element at(double mx, double my) {
@@ -115,7 +115,7 @@ public final class HudEditorScreen extends Screen {
     @Override
     public void onClose() {
         if (dirty) SlayersConfig.save();
-        minecraft.setScreen(parent);
+        minecraft.gui.setScreen(parent);
     }
 
     @Override

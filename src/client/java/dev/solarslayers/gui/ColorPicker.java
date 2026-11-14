@@ -1,12 +1,12 @@
 package dev.solarslayers.gui;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.Locale;
 
@@ -69,7 +69,7 @@ final class ColorPicker {
         return Draw.in(mx, my, x, y, W, H);
     }
 
-    void render(GuiGraphics g, Font font, int mx, int my, float delta) {
+    void render(GuiGraphicsExtractor g, Font font, int mx, int my, float delta) {
         Draw.panel(g, x - 1, y - 1, x + W + 1, y + H + 1, 0xFF000000, 0xFF000000);
         Draw.panel(g, x, y, x + W, y + H, 0xFF17181F, Draw.BORDER);
         int sx = x + 8, sy = y + 8;
@@ -102,8 +102,8 @@ final class ColorPicker {
         int ry = y + H - 22;
         Draw.panel(g, sx, ry, sx + 16, ry + 14, current(), 0xFF5A5D70);
         Draw.panel(g, x + 26, ry, x + 26 + 70, ry + 14, 0xFF0D0E12, hex.isFocused() ? Draw.ACCENT_DIM : Draw.BORDER);
-        hex.render(g, mx, my, delta);
-        g.drawString(font, "Done", x + W - 8 - font.width("Done"), ry + 3,
+        hex.extractRenderState(g, mx, my, delta);
+        g.text(font, "Done", x + W - 8 - font.width("Done"), ry + 3,
                 Draw.in(mx, my, x + W - 40, ry, 34, 14) ? Draw.GOLD : Draw.MUTED, false);
     }
 
@@ -159,7 +159,7 @@ final class ColorPicker {
     }
 
     boolean keyPressed(ConfigScreen screen, KeyEvent e) {
-        if (e.key() == GLFW.GLFW_KEY_ENTER || e.key() == GLFW.GLFW_KEY_KP_ENTER) {
+        if (e.isConfirmation()) {
             screen.closePicker();
             return true;
         }

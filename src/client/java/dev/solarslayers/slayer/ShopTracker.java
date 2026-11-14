@@ -13,7 +13,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
@@ -43,8 +43,8 @@ public final class ShopTracker {
     }
 
     /** @return true to cancel the click (it was a tracking toggle). */
-    public static boolean onSlotClick(AbstractContainerScreen<?> screen, Slot slot, int button, ClickType type) {
-        if (!SlayersConfig.get().shopTracker || slot == null || button != 1 || type != ClickType.PICKUP) return false;
+    public static boolean onSlotClick(AbstractContainerScreen<?> screen, Slot slot, int button, ContainerInput type) {
+        if (!SlayersConfig.get().shopTracker || slot == null || button != 1 || type != ContainerInput.PICKUP) return false;
         if (!isShop(screen) || slot.container instanceof Inventory) return false;
         ItemStack stack = slot.getItem();
         List<String> lore = lore(stack);
@@ -55,7 +55,7 @@ public final class ShopTracker {
 
     /** Reads the exact essence balance while the shop is open. */
     public static void tick(Minecraft mc) {
-        if (!(mc.screen instanceof AbstractContainerScreen<?> cs) || !isShop(cs)) return;
+        if (!(mc.gui.screen() instanceof AbstractContainerScreen<?> cs) || !isShop(cs)) return;
         for (Slot s : cs.getMenu().slots) {
             if (s.container instanceof Inventory) continue;
             for (String l : lore(s.getItem())) {
@@ -92,7 +92,7 @@ public final class ShopTracker {
         Minecraft mc = Minecraft.getInstance();
         boolean removed = cfg.tracked.removeIf(t -> t.name.equals(name));
         if (removed) {
-            mc.gui.getChat().addMessage(SlayersClient.prefix()
+            mc.gui.hud.getChat().addClientSystemMessage(SlayersClient.prefix()
                     .append(Component.literal("Stopped tracking ").withStyle(ChatFormatting.GRAY))
                     .append(Component.literal(name).withStyle(ChatFormatting.YELLOW)));
         } else {
@@ -100,7 +100,7 @@ public final class ShopTracker {
             t.name = name;
             t.requirements = parse(lore);
             cfg.tracked.add(t);
-            mc.gui.getChat().addMessage(SlayersClient.prefix()
+            mc.gui.hud.getChat().addClientSystemMessage(SlayersClient.prefix()
                     .append(Component.literal("Now tracking ").withStyle(ChatFormatting.GRAY))
                     .append(Component.literal(name).withStyle(ChatFormatting.YELLOW))
                     .append(Component.literal(" (right-click again to stop)").withStyle(ChatFormatting.DARK_GRAY)));

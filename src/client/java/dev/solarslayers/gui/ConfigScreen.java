@@ -3,14 +3,14 @@ package dev.solarslayers.gui;
 import dev.solarslayers.SlayersClient;
 import dev.solarslayers.config.SlayersConfig;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public final class ConfigScreen extends Screen {
         SlayersConfig c = SlayersConfig.get();
         categories.add(new Category("General", List.of(
                 new Option.Button("HUD Locations", "Drag the HUD panels where you want them. Scroll over a panel to resize it.",
-                        "Edit HUD", s -> s.minecraft.setScreen(new HudEditorScreen(s))),
+                        "Edit HUD", s -> s.minecraft.gui.setScreen(new HudEditorScreen(s))),
                 new Option.Toggle("Only Show HUD in Slayer Areas", "Hide the progress and pity panels outside the slayer world.",
                         () -> c.hudOnlyInSlayer, v -> c.hudOnlyInSlayer = v),
                 new Option.Info("Keybind", "Set a key to open this menu in Options → Controls → Key Binds, under \"Solar Slayers\". "
@@ -195,7 +195,7 @@ public final class ConfigScreen extends Screen {
     // ---------------------------------------------------------------- render
 
     @Override
-    public void render(GuiGraphics g, int mx, int my, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
         List<Row> rows = layout();
         scroll = Math.max(0, Math.min(scroll, maxScroll()));
         boolean popup = picker != null;
@@ -208,15 +208,15 @@ public final class ConfigScreen extends Screen {
         g.fill(px + 1, py + HEADER + 1, px + SIDE, py + ph - 1, Draw.SIDEBAR);
 
         // header
-        g.drawString(font, "☀ Solar Slayers", px + 12, py + 11, Draw.GOLD, true);
+        g.text(font, "☀ Solar Slayers", px + 12, py + 11, Draw.GOLD, true);
         String version = "v" + SlayersClient.version();
-        g.drawString(font, version, px + 12 + font.width("☀ Solar Slayers") + 6, py + 11, Draw.FAINT, false);
+        g.text(font, version, px + 12 + font.width("☀ Solar Slayers") + 6, py + 11, Draw.FAINT, false);
         int sx = px + pw - 146;
         Draw.panel(g, sx, py + 6, sx + 136, py + 22, 0xFF0D0E12, search.isFocused() ? Draw.ACCENT_DIM : Draw.BORDER);
         if (search.getValue().isEmpty() && !search.isFocused()) {
-            g.drawString(font, "Search…", sx + 6, py + 10, Draw.FAINT, false);
+            g.text(font, "Search…", sx + 6, py + 10, Draw.FAINT, false);
         }
-        search.render(g, mx, my, delta);
+        search.extractRenderState(g, mx, my, delta);
 
         // sidebar
         String q = search.getValue().trim();
@@ -227,30 +227,30 @@ public final class ConfigScreen extends Screen {
             if (sel) Draw.round(g, px + 4, cy, px + SIDE - 4, cy + 18, 0xFF262836);
             else if (hover) Draw.round(g, px + 4, cy, px + SIDE - 4, cy + 18, 0xFF1F2029);
             if (sel) g.fill(px + 4, cy + 3, px + 6, cy + 15, Draw.ACCENT);
-            g.drawString(font, categories.get(i).name(), px + 12, cy + 5, sel ? Draw.TEXT : hover ? Draw.TEXT : Draw.MUTED, false);
+            g.text(font, categories.get(i).name(), px + 12, cy + 5, sel ? Draw.TEXT : hover ? Draw.TEXT : Draw.MUTED, false);
         }
-        g.drawString(font, "Esc to close", px + 12, py + ph - 16, Draw.FAINT, false);
+        g.text(font, "Esc to close", px + 12, py + ph - 16, Draw.FAINT, false);
 
         // content
         int cx = contentX(), cyTop = contentY(), cw = contentW(), ch = contentH();
         g.enableScissor(cx, cyTop, cx + cw, cyTop + ch);
         if (rows.isEmpty()) {
-            g.drawCenteredString(font, "No settings match \"" + q + "\"", cx + cw / 2, cyTop + 20, Draw.MUTED);
+            g.centeredText(font, "No settings match \"" + q + "\"", cx + cw / 2, cyTop + 20, Draw.MUTED);
         }
         for (Row r : rows) {
             int y = cyTop + r.y() - (int) scroll;
             if (y + r.h() < cyTop || y > cyTop + ch) continue;
             if (r.option() == null) {
-                g.drawString(font, r.heading().toUpperCase(Locale.ROOT), cx + 2, y + 3, Draw.GOLD, false);
+                g.text(font, r.heading().toUpperCase(Locale.ROOT), cx + 2, y + 3, Draw.GOLD, false);
                 continue;
             }
             Option o = r.option();
             boolean hover = Draw.in(hmx, hmy, cx, y, cw, r.h()) && hmy >= cyTop && hmy < cyTop + ch;
             Draw.round(g, cx, y, cx + cw, y + r.h(), hover ? Draw.CARD_HOVER : Draw.CARD);
-            g.drawString(font, o.title, cx + 10, y + 8, Draw.TEXT, false);
+            g.text(font, o.title, cx + 10, y + 8, Draw.TEXT, false);
             int ly = y + 20;
             for (FormattedCharSequence line : o.wrap(font, descWidth(o))) {
-                g.drawString(font, line, cx + 10, ly, Draw.MUTED, false);
+                g.text(font, line, cx + 10, ly, Draw.MUTED, false);
                 ly += 10;
             }
             if (o.controlWidth() > 0) o.renderControl(g, font, cx + cw - 10, y + r.h() / 2, hmx, hmy, delta);
@@ -351,11 +351,11 @@ public final class ConfigScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent e) {
-        if (e.key() == GLFW.GLFW_KEY_ESCAPE && picker != null) {
+        if (e.key() == InputConstants.KEY_ESCAPE && picker != null) {
             closePicker();
             return true;
         }
-        if (e.key() == GLFW.GLFW_KEY_F && (e.modifiers() & GLFW.GLFW_MOD_CONTROL) != 0) {
+        if (e.key() == InputConstants.KEY_F && (e.modifiers() & InputConstants.MOD_CONTROL) != 0) {
             setFocused(search);
             search.setFocused(true);
             return true;
@@ -367,7 +367,7 @@ public final class ConfigScreen extends Screen {
     @Override
     public void onClose() {
         if (dirty) SlayersConfig.save();
-        minecraft.setScreen(parent);
+        minecraft.gui.setScreen(parent);
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.solarslayers.render.Highlight;
 import dev.solarslayers.slayer.EntityScanner;
 import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderState;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,11 +25,11 @@ public abstract class LivingEntityRendererMixin {
     private void solarslayers$tag(LivingEntity entity, LivingEntityRenderState state, float partialTick, CallbackInfo ci) {
         Integer color = EntityScanner.INSTANCE.colorFor(entity.getId());
         ((FabricRenderState) state).setData(Highlight.COLOR, color);
-        if (color != null) state.lightCoords = LightTexture.FULL_BRIGHT;
+        if (color != null) state.lightCoords = LightCoordsUtil.FULL_BRIGHT;
     }
 
     @ModifyExpressionValue(
-            method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+            method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;getModelTint(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;)I"))
     private int solarslayers$tint(int original, @Local(argsOnly = true) LivingEntityRenderState state) {

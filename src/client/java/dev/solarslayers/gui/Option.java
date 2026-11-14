@@ -1,7 +1,7 @@
 package dev.solarslayers.gui;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -24,7 +24,7 @@ public abstract class Option {
     public abstract int controlWidth();
 
     /** Draws the control, right-aligned inside the card, vertically centred at {@code cy}. */
-    public abstract void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta);
+    public abstract void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta);
 
     /** @return true when handled. */
     public boolean click(ConfigScreen screen, double mx, double my, int right, int cy, int button) {
@@ -59,7 +59,7 @@ public abstract class Option {
         @Override public int controlWidth() { return 24; }
 
         @Override
-        public void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta) {
+        public void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta) {
             boolean on = get.get();
             float target = on ? 1 : 0;
             if (anim < 0) anim = target;
@@ -91,7 +91,7 @@ public abstract class Option {
         @Override public int controlWidth() { return 36; }
 
         @Override
-        public void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta) {
+        public void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta) {
             int x = right - 36, y = cy - 7;
             boolean hover = Draw.in(mx, my, x, y, 36, 14);
             Draw.panel(g, x, y, x + 36, y + 14, 0xFF000000 | get.getAsInt(), hover ? 0xFFFFFFFF : 0xFF5A5D70);
@@ -123,10 +123,10 @@ public abstract class Option {
         @Override public int controlWidth() { return 110; }
 
         @Override
-        public void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta) {
+        public void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta) {
             int v = get.getAsInt();
             String label = v + unit;
-            g.drawString(font, label, right - font.width(label), cy - 4, Draw.TEXT, false);
+            g.text(font, label, right - font.width(label), cy - 4, Draw.TEXT, false);
             int x = right - 110, w = 80;
             double f = (v - min) / (double) (max - min);
             Draw.bar(g, x, cy - 2, w, 4, f, Draw.ACCENT);
@@ -172,11 +172,11 @@ public abstract class Option {
         @Override public int controlWidth() { return 80; }
 
         @Override
-        public void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta) {
+        public void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta) {
             int w = Math.max(60, font.width(label) + 16), x = right - w, y = cy - 8;
             boolean hover = Draw.in(mx, my, x, y, w, 16);
             Draw.panel(g, x, y, x + w, y + 16, hover ? 0xFF33354A : 0xFF2A2C3A, hover ? Draw.ACCENT : 0xFF44475C);
-            g.drawCenteredString(font, label, x + w / 2, cy - 4, Draw.TEXT);
+            g.centeredText(font, label, x + w / 2, cy - 4, Draw.TEXT);
         }
 
         @Override
@@ -195,6 +195,6 @@ public abstract class Option {
         @Override public int controlWidth() { return 0; }
 
         @Override
-        public void renderControl(GuiGraphics g, Font font, int right, int cy, int mx, int my, float delta) {}
+        public void renderControl(GuiGraphicsExtractor g, Font font, int right, int cy, int mx, int my, float delta) {}
     }
 }

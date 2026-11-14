@@ -64,6 +64,6 @@ public final class ChatListener {
                 .withUnderlined(true)
                 .withClickEvent(new ClickEvent.RunCommand("/slayer"))
                 .withHoverEvent(new HoverEvent.ShowText(Component.literal("Runs /slayer").withStyle(ChatFormatting.GRAY))));
-        mc.gui.getChat().addMessage(SlayersClient.prefix().append(link));
+        mc.gui.hud.getChat().addClientSystemMessage(SlayersClient.prefix().append(link));
     }
 }
