@@ -64,7 +64,12 @@ public final class ConfigScreen extends Screen {
                 new Option.Toggle("Miniboss Highlight", "Colour minibosses such as the Moonlit Hunter. New minibosses are learned from chat.",
                         () -> c.minibossHighlight, v -> c.minibossHighlight = v),
                 new Option.Color("Miniboss Colour", "Colour used for the miniboss highlight.",
-                        () -> c.minibossColor, v -> c.minibossColor = v))));
+                        () -> c.minibossColor, v -> c.minibossColor = v),
+                new Option.Toggle("Minion Highlight", "Colour the minions a boss calls, such as the Moonfang Alpha's pups. "
+                        + "With Only My Boss on, only minions near your boss.",
+                        () -> c.minionHighlight, v -> c.minionHighlight = v),
+                new Option.Color("Minion Colour", "Colour used for the minion highlight.",
+                        () -> c.minionColor, v -> c.minionColor = v))));
         categories.add(new Category("Slayer HUD", List.of(
                 new Option.Toggle("Slayer Progress", "Boss HP and time left while it is alive; otherwise XP until the boss and kills left.",
                         () -> c.progressHud, v -> c.progressHud = v),
