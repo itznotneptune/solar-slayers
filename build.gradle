@@ -1,0 +1,38 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+}
+
+// Jar name carries the Minecraft version, e.g. solarslayers-0.1.0+1.21.11.jar
+version = "${mod_version}+${minecraft_version}"
+base.archivesName = 'solarslayers'
+
+loom {
+	splitEnvironmentSourceSets()
+	mods {
+		"solarslayers" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+}
+
+processResources {
+	def props = [version: project.version, minecraft_dependency: project.minecraft_dependency]
+	inputs.properties props
+	filesMatching('fabric.mod.json') { expand props }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 21 }
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}

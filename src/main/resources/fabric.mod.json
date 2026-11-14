@@ -1,0 +1,22 @@
+{
+	"schemaVersion": 1,
+	"id": "solarslayers",
+	"version": "${version}",
+	"name": "Solar Slayers",
+	"description": "Quality-of-life features for slayers on SolarSkies: boss and miniboss highlights, a slayer progress HUD, pity meter, upgrade tracker and quest warnings. Unofficial.\nAuthor: ItzNotNeptune",
+	"authors": ["ItzNotNeptune"],
+	"license": "All-Rights-Reserved",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["dev.solarslayers.SlayersClient"]
+	},
+	"mixins": [
+		{ "config": "solarslayers.mixins.json", "environment": "client" }
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "${minecraft_dependency}",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

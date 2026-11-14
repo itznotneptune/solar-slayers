@@ -1,0 +1,43 @@
+# Solar Slayers
+
+Client-side Fabric mod with quality-of-life features for slayers on SolarSkies. Unofficial. By ItzNotNeptune.
+It only reads what the server already shows; it sends nothing on its own.
+
+## Minecraft versions
+Each supported Minecraft version has its own branch:
+
+| Branch | Minecraft | Fabric API |
+|---|---|---|
+| `1.21.11` (default) | 1.21.11 | 0.141.6+1.21.11 |
+| `1.21.9` | 1.21.9 – 1.21.10 | 0.134.1+1.21.9 |
+
+The jar name includes the Minecraft version, e.g. `solarslayers-0.1.0+1.21.11.jar`. Version-specific code lives in
+`src/client/java/dev/solarslayers/compat/Compat.java`; everything else is identical across branches, so fixes are
+made on `1.21.11` and merged into the other branches.
+
+## Features
+- **Boss highlight**: your slayer boss is drawn full-bright in a solid colour you pick. "Only my boss" uses the
+  `Spawned by: <you>` label above it.
+- **Miniboss highlight**: same, for minibosses such as the Moonlit Hunter. New minibosses are learned from the
+  `MINIBOSS! A <name> spawned` chat line.
+- **No quest warning**: red title, white subtitle and a ding when you hit slayer mobs without an active quest.
+- **Slayer progress HUD**: boss HP, time left and ward state while the boss is alive; otherwise XP until the boss and
+  kills left (XP per kill is configurable, default 5).
+- **Pity meter HUD**: selected pity item and meter progress.
+- **Upgrade tracker**: right-click an item in the Upgrade Shop to track it (the click is not sent to the server, so it
+  never crafts). Shows level, Essence and materials against what the item needs.
+- **Slayer menu link**: a clickable chat line after each boss kill that runs `/slayer`.
+
+Open the settings with `/slayer+`, `/slayerplus`, or a key set in Options → Controls → Key Binds → Solar Slayers →
+Open Mod GUI (unbound by default). HUD panels are moved in General → Edit HUD.
+
+## Install
+Put the jar for your Minecraft version and [Fabric API](https://modrinth.com/mod/fabric-api) in your Fabric mods folder.
+
+## Build
+Gradle must run on **Java 25** (Loom 1.18 needs it); the mod targets Java 21. Set `JAVA_HOME` to a JDK 25, or set
+`org.gradle.java.home` in `gradle.properties`, then run `./gradlew build`. The jar is written to `build/libs/`.
+
+## Development notes
+- `docs/wolf-slayer-signals.md`: the exact chat, sidebar and entity formats the mod matches, from a recorded fight.
+- `tools/record_boss.py`, `tools/dump_screen.py`: read-only recorders that use a local HTTP bridge mod.
