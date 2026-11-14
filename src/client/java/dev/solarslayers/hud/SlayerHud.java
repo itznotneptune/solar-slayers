@@ -214,7 +214,7 @@ public final class SlayerHud {
                         if (met || have < 0) reqs.add(Line.text(label, col));
                         else reqs.add(Line.bar(label, col, have / r.need, Draw.ACCENT));
                     }
-                    case OTHER -> reqs.add(Line.text(mark + r.target, col));
+                    case OWN, OTHER -> reqs.add(Line.text(mark + r.target, col));
                 }
             }
             out.add(Line.text(t.name + (all ? "  – ready to craft!" : ""), all ? Draw.GOOD : Draw.TEXT));

@@ -118,7 +118,8 @@ public final class SlayersConfig {
     }
 
     public static final class Requirement {
-        public enum Kind { LEVEL, ESSENCE, ITEM, OTHER }
+        /** OWN: one specific item with no count, e.g. the previous armour tier or a boss drop. */
+        public enum Kind { LEVEL, ESSENCE, ITEM, OWN, OTHER }
 
         public Kind kind;
         /** Slayer name for LEVEL, item name for ITEM, the full line for OTHER. */
