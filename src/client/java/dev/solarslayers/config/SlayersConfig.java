@@ -33,6 +33,8 @@ public final class SlayersConfig {
     public boolean onlyMyBoss = true;
     public boolean minibossHighlight = true;
     public int minibossColor = 0xFFFFA62B;
+    public boolean minionHighlight = true;
+    public int minionColor = 0xFFB86BFF;
 
     // HUD
     public boolean hudOnlyInSlayer = true;
@@ -53,6 +55,8 @@ public final class SlayersConfig {
 
     // Learned data
     public List<String> minibossNames = new ArrayList<>(List.of("Moonlit Hunter"));
+    /** Base names (no HP) of boss minions, e.g. the Moonfang Alpha's pups. */
+    public List<String> minionNames = new ArrayList<>(List.of("Moonfang"));
     /** Slayer name (normalised) → level, read from the sidebar while in that slayer's area. */
     public Map<String, Integer> slayerLevels = new HashMap<>();
     /** Exact essence last seen in the Upgrade Shop, kept up to date from kill messages. */
@@ -95,6 +99,7 @@ public final class SlayersConfig {
         if (trackerPos == null) trackerPos = d.trackerPos;
         if (tracked == null) tracked = new ArrayList<>();
         if (minibossNames == null) minibossNames = d.minibossNames;
+        if (minionNames == null) minionNames = d.minionNames;
         if (slayerLevels == null) slayerLevels = new HashMap<>();
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
