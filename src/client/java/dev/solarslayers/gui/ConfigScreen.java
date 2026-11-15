@@ -2,6 +2,7 @@ package dev.solarslayers.gui;
 
 import dev.solarslayers.SlayersClient;
 import dev.solarslayers.config.SlayersConfig;
+import dev.solarslayers.slayer.SlayerTimer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
@@ -77,14 +78,27 @@ public final class ConfigScreen extends Screen {
                         + "With Only My Boss on, only minions near your boss.",
                         () -> c.blazeMinionHighlight, v -> c.blazeMinionHighlight = v),
                 new Option.Color("Blaze Minion Colour", "Colour used for the Solar Flare minion highlight.",
-                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v))));
+                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v),
+                new Option.Toggle("Solar Mob Highlight", "Colour the normal Solar slayer mobs (blazes and zombified piglins "
+                        + "with a health bar, like Solar Blaze), in the slayer world only.",
+                        () -> c.solarMobHighlight, v -> c.solarMobHighlight = v),
+                new Option.Color("Solar Mob Colour", "Colour used for the normal Solar slayer mobs.",
+                        () -> c.solarMobColor, v -> c.solarMobColor = v))));
         categories.add(new Category("Slayer HUD", List.of(
                 new Option.Toggle("Slayer Progress", "Boss HP and time left while it is alive; otherwise XP until the boss and kills left.",
                         () -> c.progressHud, v -> c.progressHud = v),
                 new Option.Slider("XP per Kill", "Used to work out how many kills are left before the boss spawns.",
                         1, 50, " XP", () -> c.xpPerKill, v -> c.xpPerKill = v),
                 new Option.Toggle("Pity Meter", "Your selected pity item and how close the meter is.",
-                        () -> c.pityHud, v -> c.pityHud = v))));
+                        () -> c.pityHud, v -> c.pityHud = v),
+                new Option.Toggle("Pity in Bosses", "Show how many bosses are left until the pity drop instead of the XP and "
+                        + "percentage. Uses the Slayer XP from your last kill, so it appears after one kill.",
+                        () -> c.pityShowBosses, v -> c.pityShowBosses = v),
+                new Option.Toggle("Slayer Timer", "How long the boss took to spawn and to kill, bosses killed this session and "
+                        + "bosses per hour. Breaks over 10 minutes between slayer messages don't count against the rate.",
+                        () -> c.timerHud, v -> c.timerHud = v),
+                new Option.Button("Reset Timer Session", "Start the bosses-per-hour count and averages again from zero.",
+                        "Reset", s -> SlayerTimer.INSTANCE.resetSession()))));
         categories.add(new Category("Alerts", List.of(
                 new Option.Toggle("No Quest Warning", "Show a title when you hit slayer mobs without an active slayer quest.",
                         () -> c.questWarning, v -> c.questWarning = v),
@@ -108,6 +122,10 @@ public final class ConfigScreen extends Screen {
                     s.changed();
                 }),
                 new Option.Info("Essence", "Your exact Essence is read when you open the Upgrade Shop, then kept up to date from boss kills."))));
+        categories.add(new Category("World", List.of(
+                new Option.Slider("Prismarine Shade", "Darkens prismarine, prismarine bricks and dark prismarine (with their stairs, "
+                        + "slabs and wall). 0% leaves them as they are, 100% makes them black.",
+                        0, 100, "%", () -> c.prismarineShade, v -> c.prismarineShade = v))));
         categories.add(new Category("Coming Soon", List.of(
                 new Option.Info("Auto Restart Quest", "Starts the same tier again after a boss dies. "
                         + "Waits on the server adding /slayer start."))));

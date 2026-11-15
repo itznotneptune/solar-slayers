@@ -8,6 +8,7 @@ import dev.solarslayers.gui.Draw;
 import dev.solarslayers.slayer.EntityScanner;
 import dev.solarslayers.slayer.ShopTracker;
 import dev.solarslayers.slayer.SidebarState;
+import dev.solarslayers.slayer.SlayerTimer;
 import dev.solarslayers.util.Txt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -17,10 +18,10 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The three HUD panels: slayer progress, pity meter and upgrade tracker. */
+/** The HUD panels: slayer progress, pity meter, upgrade tracker and slayer timer. */
 public final class SlayerHud {
     public enum Element {
-        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker");
+        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker"), TIMER("Slayer Timer");
 
         public final String label;
 
@@ -34,6 +35,7 @@ public final class SlayerHud {
                 case PROGRESS -> c.progressPos;
                 case PITY -> c.pityPos;
                 case TRACKER -> c.trackerPos;
+                case TIMER -> c.timerPos;
             };
         }
 
@@ -43,6 +45,7 @@ public final class SlayerHud {
                 case PROGRESS -> c.progressHud;
                 case PITY -> c.pityHud;
                 case TRACKER -> c.trackerHud && c.shopTracker;
+                case TIMER -> c.timerHud;
             };
         }
     }
@@ -121,6 +124,7 @@ public final class SlayerHud {
             case PROGRESS -> progress(preview);
             case PITY -> pity(preview);
             case TRACKER -> tracker(preview);
+            case TIMER -> timer(preview);
         };
     }
 
@@ -165,19 +169,73 @@ public final class SlayerHud {
         if (preview && !s.inSlayer) {
             out.add(Line.text("Pity Meter", Draw.PURPLE));
             out.add(Line.text("250 Slayer Essence", Draw.TEXT));
-            out.add(Line.bar("100/250 (40%)", Draw.MUTED, 0.4, 0xFFC08CFF));
+            out.add(Line.bar(SlayersConfig.get().pityShowBosses ? "6 bosses left" : "100/250 (40%)",
+                    Draw.MUTED, 0.4, 0xFFC08CFF));
             return out;
         }
         if (!s.inSlayer) return out;
         out.add(Line.text("Pity Meter", Draw.PURPLE));
         if (!s.pitySet) {
             out.add(Line.text("Not set – choose one with /pity", Draw.MUTED));
+            // the sidebar does not show the stored XP; the kill summary does ("Pity Meter - Not set (66k XP saved)")
+            Double saved = SlayersConfig.get().pitySaved.get(s.pityKey());
+            out.add(saved != null ? Line.text(Txt.fmt(saved) + " XP saved", Draw.GOLD)
+                    : Line.text("XP saved: shown after your next kill", Draw.MUTED));
             return out;
         }
         out.add(Line.text(s.pityItem, Draw.TEXT));
         if (s.pityPct >= 0) {
-            out.add(Line.bar(Txt.fmt(s.pityHave) + "/" + Txt.fmt(s.pityNeed) + " (" + s.pityPct + "%)",
-                    Draw.MUTED, s.pityPct / 100.0, 0xFFC08CFF));
+            String label = Txt.fmt(s.pityHave) + "/" + Txt.fmt(s.pityNeed) + " (" + s.pityPct + "%)";
+            if (SlayersConfig.get().pityShowBosses) {
+                // the meter fills by the boss's Slayer XP (recorded: +25 Slayer XP took it from 100/250 to 125/250);
+                // until a kill has shown that amount, the numbers stay
+                long left = bossesLeft(s.pityHave, s.pityNeed, SlayersConfig.get().bossXp.get(s.pityKey()));
+                if (left == 0) label = "Meter full";
+                else if (left > 0) label = left + (left == 1 ? " boss left" : " bosses left");
+            }
+            out.add(Line.bar(label, Draw.MUTED, s.pityPct / 100.0, 0xFFC08CFF));
+        }
+        return out;
+    }
+
+    /** Boss kills until the pity meter is full, or -1 when unknown. 0 means it is already full. */
+    static long bossesLeft(double have, double need, Double perBoss) {
+        if (perBoss == null || perBoss <= 0 || Double.isNaN(have) || Double.isNaN(need)) return -1;
+        return (long) Math.ceil(Math.max(0, need - have) / perBoss);
+    }
+
+    private static List<Line> timer(boolean preview) {
+        SlayerTimer t = SlayerTimer.INSTANCE;
+        long now = System.currentTimeMillis();
+        List<Line> out = new ArrayList<>();
+        if (preview && t.kills() == 0 && !t.inQuest()) {
+            out.add(Line.text("Slayer Timer", Draw.GOLD));
+            out.add(Line.text("Boss fight: 0:24", Draw.TEXT));
+            out.add(Line.text("Last: 2:05 (1:40 spawn + 0:25 kill)", Draw.MUTED));
+            out.add(Line.text("Bosses: 6 · 14.2/hr", Draw.GOOD));
+            out.add(Line.text("Average 3:10 · Best 2:05", Draw.MUTED));
+            return out;
+        }
+        if (!t.inQuest() && t.kills() == 0 && t.lastKillMs() < 0) return out;
+        out.add(Line.text("Slayer Timer", Draw.GOLD));
+        if (t.bossAlive()) {
+            out.add(Line.text("Boss fight: " + SlayerTimer.clock(t.fightElapsed(now)), Draw.TEXT));
+            if (t.spawnTook() >= 0) out.add(Line.text("Spawned in " + SlayerTimer.clock(t.spawnTook()), Draw.MUTED));
+        } else if (t.inQuest()) {
+            out.add(Line.text("Spawning boss: " + SlayerTimer.clock(t.questElapsed(now)), Draw.TEXT));
+        }
+        if (t.lastTotalMs() >= 0) {
+            out.add(Line.text("Last: " + SlayerTimer.clock(t.lastTotalMs()) + " (" + SlayerTimer.clock(t.lastSpawnMs())
+                    + " spawn + " + SlayerTimer.clock(t.lastKillMs()) + " kill)", Draw.MUTED));
+        } else if (t.lastKillMs() >= 0) {
+            out.add(Line.text("Last kill: " + SlayerTimer.clock(t.lastKillMs()), Draw.MUTED));
+        }
+        if (t.kills() > 0) {
+            double rate = t.perHour();
+            out.add(Line.text("Bosses: " + t.kills() + (Double.isNaN(rate) ? "" : String.format(" · %.1f/hr", rate)), Draw.GOOD));
+            if (t.averageMs() >= 0) {
+                out.add(Line.text("Average " + SlayerTimer.clock(t.averageMs()) + " · Best " + SlayerTimer.clock(t.bestMs()), Draw.MUTED));
+            }
         }
         return out;
     }

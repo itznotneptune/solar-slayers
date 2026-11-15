@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -104,6 +105,15 @@ public final class EntityScanner {
         if (cfg.blazeMinionHighlight) {
             for (LivingEntity le : blazeMinions) {
                 if (nearMyBoss(le, cfg)) highlights.put(le.getId(), cfg.blazeMinionColor);
+            }
+        }
+        // normal Solar slayer mobs (e.g. "Solar Blaze 5k/5k❤"): blazes and zombified piglins with a health nametag,
+        // in the slayer world only; anything already coloured as a minion keeps that colour
+        if (cfg.solarMobHighlight && SidebarState.INSTANCE.inSlayer) {
+            for (LivingEntity le : others) {
+                if (highlights.containsKey(le.getId())) continue;
+                if (le.getType() != EntityTypes.BLAZE && le.getType() != EntityTypes.ZOMBIFIED_PIGLIN) continue;
+                if (Txt.clean(le.getCustomName().getString()).contains("❤")) highlights.put(le.getId(), cfg.solarMobColor);
             }
         }
 
