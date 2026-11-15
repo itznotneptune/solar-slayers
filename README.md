@@ -17,8 +17,8 @@ merged into the other branches. On `1.21.9` only `compat/Compat.java` differs. `
 many renamed Minecraft APIs, so its branch carries its own port of the code and needs Java 25 to play.
 
 ## Features
-- **Boss highlight**: your slayer boss is drawn full-bright in a solid colour you pick. "Only my boss" uses the
-  `Spawned by: <you>` label above it.
+- **Boss highlight**: your slayer boss is drawn full-bright with a layer of the colour you pick over it, so the colour
+  stays true on any texture (opacity adjustable). "Only my boss" uses the `Spawned by: <you>` label above it.
 - **Miniboss highlight**: same, for minibosses such as the Moonlit Hunter. New minibosses are learned from the
   `MINIBOSS! A <name> spawned` chat line.
 - **Minion highlight**: the minions a boss calls (the Moonfang Alpha's pups at T3) in their own colour. With

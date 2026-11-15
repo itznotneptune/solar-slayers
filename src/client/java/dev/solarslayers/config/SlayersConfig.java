@@ -31,6 +31,8 @@ public final class SlayersConfig {
     public boolean bossHighlight = true;
     public int bossColor = 0xFFFF3B3B;
     public boolean onlyMyBoss = true;
+    /** Opacity (percent) of the colour drawn over highlighted mobs. */
+    public int highlightOpacity = 75;
     public boolean minibossHighlight = true;
     public int minibossColor = 0xFFFFA62B;
     public boolean minionHighlight = true;
@@ -105,6 +107,7 @@ public final class SlayersConfig {
         if (slayerLevels == null) slayerLevels = new HashMap<>();
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
+        highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));
     }
 
     public static final class HudPos {

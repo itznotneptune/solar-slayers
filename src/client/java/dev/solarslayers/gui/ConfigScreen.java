@@ -61,6 +61,8 @@ public final class ConfigScreen extends Screen {
                 new Option.Color("Boss Colour", "Colour used for the boss highlight.", () -> c.bossColor, v -> c.bossColor = v),
                 new Option.Toggle("Only My Boss", "Highlight only the boss you spawned, not other players' bosses.",
                         () -> c.onlyMyBoss, v -> c.onlyMyBoss = v),
+                new Option.Slider("Highlight Opacity", "How solid the highlight colour is drawn over the mob. 100% hides its texture.",
+                        20, 100, "%", () -> c.highlightOpacity, v -> c.highlightOpacity = v),
                 new Option.Toggle("Miniboss Highlight", "Colour minibosses such as the Moonlit Hunter. New minibosses are learned from chat.",
                         () -> c.minibossHighlight, v -> c.minibossHighlight = v),
                 new Option.Color("Miniboss Colour", "Colour used for the miniboss highlight.",
