@@ -41,7 +41,21 @@ public final class ChatListener {
             return;
         }
 
+        if (text.contains("SLAYER QUEST STARTED!")) {
+            SlayerTimer.INSTANCE.onQuestStart(System.currentTimeMillis());
+            return;
+        }
+        if (text.contains("SLAYER BOSS SPAWNED!")) {
+            SlayerTimer.INSTANCE.onBossSpawn(System.currentTimeMillis());
+            return;
+        }
+        if (text.contains("SLAYER QUEST FAILED!")) {
+            SlayerTimer.INSTANCE.onQuestFail(System.currentTimeMillis());
+            return;
+        }
+
         if (text.contains("SLAYER BOSS SLAIN!")) {
+            SlayerTimer.INSTANCE.onBossKill(System.currentTimeMillis());
             if (cfg.slainChatLink) {
                 // A few ticks later, so the link lands under the server's kill summary.
                 SlayersClient.schedule(5, ChatListener::sendMenuLink);

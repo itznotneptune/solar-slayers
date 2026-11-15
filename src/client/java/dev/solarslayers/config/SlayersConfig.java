@@ -45,10 +45,12 @@ public final class SlayersConfig {
     public boolean progressHud = true;
     public boolean pityHud = true;
     public boolean trackerHud = true;
+    public boolean timerHud = true;
     public int xpPerKill = 5;
     public HudPos progressPos = new HudPos(6, 70, 1f);
     public HudPos pityPos = new HudPos(6, 135, 1f);
     public HudPos trackerPos = new HudPos(6, 180, 1f);
+    public HudPos timerPos = new HudPos(6, 240, 1f);
 
     // Chat
     public boolean slainChatLink = true;
@@ -107,6 +109,7 @@ public final class SlayersConfig {
         if (progressPos == null) progressPos = d.progressPos;
         if (pityPos == null) pityPos = d.pityPos;
         if (trackerPos == null) trackerPos = d.trackerPos;
+        if (timerPos == null) timerPos = d.timerPos;
         if (tracked == null) tracked = new ArrayList<>();
         if (minibossNames == null) minibossNames = d.minibossNames;
         if (minionNames == null) minionNames = d.minionNames;

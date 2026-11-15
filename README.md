@@ -31,7 +31,10 @@ many renamed Minecraft APIs, so its branch carries its own port of the code and 
 - **No quest warning**: red title, white subtitle and a ding when you hit slayer mobs without an active quest.
 - **Slayer progress HUD**: boss HP, time left and ward state while the boss is alive; otherwise XP until the boss and
   kills left (XP per kill is configurable, default 5).
-- **Pity meter HUD**: selected pity item and meter progress.
+- **Pity meter HUD**: selected pity item and meter progress; with none set, the XP saved (from the kill summary).
+- **Slayer timer HUD**: time to spawn and to kill the boss (from the `SLAYER QUEST STARTED!`, `SLAYER BOSS SPAWNED!`
+  and `SLAYER BOSS SLAIN!` chat lines), last run, bosses this session, bosses per hour, average and best. Gaps over
+  10 minutes between slayer messages don't count against the hourly rate.
 - **Upgrade tracker**: right-click an item in the Upgrade Shop to track it (the click is not sent to the server, so it
   never crafts). Shows level, Essence and materials against what the item needs.
 - **Slayer menu link**: a clickable chat line after each boss kill that runs `/slayer`.

@@ -8,6 +8,7 @@ import dev.solarslayers.gui.Draw;
 import dev.solarslayers.slayer.EntityScanner;
 import dev.solarslayers.slayer.ShopTracker;
 import dev.solarslayers.slayer.SidebarState;
+import dev.solarslayers.slayer.SlayerTimer;
 import dev.solarslayers.util.Txt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -17,10 +18,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The three HUD panels: slayer progress, pity meter and upgrade tracker. */
+/** The HUD panels: slayer progress, pity meter, upgrade tracker and slayer timer. */
 public final class SlayerHud {
     public enum Element {
-        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker");
+        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker"), TIMER("Slayer Timer");
 
         public final String label;
 
@@ -34,6 +35,7 @@ public final class SlayerHud {
                 case PROGRESS -> c.progressPos;
                 case PITY -> c.pityPos;
                 case TRACKER -> c.trackerPos;
+                case TIMER -> c.timerPos;
             };
         }
 
@@ -43,6 +45,7 @@ public final class SlayerHud {
                 case PROGRESS -> c.progressHud;
                 case PITY -> c.pityHud;
                 case TRACKER -> c.trackerHud && c.shopTracker;
+                case TIMER -> c.timerHud;
             };
         }
     }
@@ -121,6 +124,7 @@ public final class SlayerHud {
             case PROGRESS -> progress(preview);
             case PITY -> pity(preview);
             case TRACKER -> tracker(preview);
+            case TIMER -> timer(preview);
         };
     }
 
@@ -182,6 +186,42 @@ public final class SlayerHud {
         if (s.pityPct >= 0) {
             out.add(Line.bar(Txt.fmt(s.pityHave) + "/" + Txt.fmt(s.pityNeed) + " (" + s.pityPct + "%)",
                     Draw.MUTED, s.pityPct / 100.0, 0xFFC08CFF));
+        }
+        return out;
+    }
+
+    private static List<Line> timer(boolean preview) {
+        SlayerTimer t = SlayerTimer.INSTANCE;
+        long now = System.currentTimeMillis();
+        List<Line> out = new ArrayList<>();
+        if (preview && t.kills() == 0 && !t.inQuest()) {
+            out.add(Line.text("Slayer Timer", Draw.GOLD));
+            out.add(Line.text("Boss fight: 0:24", Draw.TEXT));
+            out.add(Line.text("Last: 2:05 (1:40 spawn + 0:25 kill)", Draw.MUTED));
+            out.add(Line.text("Bosses: 6 · 14.2/hr", Draw.GOOD));
+            out.add(Line.text("Average 3:10 · Best 2:05", Draw.MUTED));
+            return out;
+        }
+        if (!t.inQuest() && t.kills() == 0 && t.lastKillMs() < 0) return out;
+        out.add(Line.text("Slayer Timer", Draw.GOLD));
+        if (t.bossAlive()) {
+            out.add(Line.text("Boss fight: " + SlayerTimer.clock(t.fightElapsed(now)), Draw.TEXT));
+            if (t.spawnTook() >= 0) out.add(Line.text("Spawned in " + SlayerTimer.clock(t.spawnTook()), Draw.MUTED));
+        } else if (t.inQuest()) {
+            out.add(Line.text("Spawning boss: " + SlayerTimer.clock(t.questElapsed(now)), Draw.TEXT));
+        }
+        if (t.lastTotalMs() >= 0) {
+            out.add(Line.text("Last: " + SlayerTimer.clock(t.lastTotalMs()) + " (" + SlayerTimer.clock(t.lastSpawnMs())
+                    + " spawn + " + SlayerTimer.clock(t.lastKillMs()) + " kill)", Draw.MUTED));
+        } else if (t.lastKillMs() >= 0) {
+            out.add(Line.text("Last kill: " + SlayerTimer.clock(t.lastKillMs()), Draw.MUTED));
+        }
+        if (t.kills() > 0) {
+            double rate = t.perHour(now);
+            out.add(Line.text("Bosses: " + t.kills() + (Double.isNaN(rate) ? "" : String.format(" · %.1f/hr", rate)), Draw.GOOD));
+            if (t.averageMs() >= 0) {
+                out.add(Line.text("Average " + SlayerTimer.clock(t.averageMs()) + " · Best " + SlayerTimer.clock(t.bestMs()), Draw.MUTED));
+            }
         }
         return out;
     }

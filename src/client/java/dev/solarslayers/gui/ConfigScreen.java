@@ -2,6 +2,7 @@ package dev.solarslayers.gui;
 
 import dev.solarslayers.SlayersClient;
 import dev.solarslayers.config.SlayersConfig;
+import dev.solarslayers.slayer.SlayerTimer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -84,7 +85,12 @@ public final class ConfigScreen extends Screen {
                 new Option.Slider("XP per Kill", "Used to work out how many kills are left before the boss spawns.",
                         1, 50, " XP", () -> c.xpPerKill, v -> c.xpPerKill = v),
                 new Option.Toggle("Pity Meter", "Your selected pity item and how close the meter is.",
-                        () -> c.pityHud, v -> c.pityHud = v))));
+                        () -> c.pityHud, v -> c.pityHud = v),
+                new Option.Toggle("Slayer Timer", "How long the boss took to spawn and to kill, bosses killed this session and "
+                        + "bosses per hour. Breaks over 10 minutes between slayer messages don't count against the rate.",
+                        () -> c.timerHud, v -> c.timerHud = v),
+                new Option.Button("Reset Timer Session", "Start the bosses-per-hour count and averages again from zero.",
+                        "Reset", s -> SlayerTimer.INSTANCE.resetSession()))));
         categories.add(new Category("Alerts", List.of(
                 new Option.Toggle("No Quest Warning", "Show a title when you hit slayer mobs without an active slayer quest.",
                         () -> c.questWarning, v -> c.questWarning = v),
