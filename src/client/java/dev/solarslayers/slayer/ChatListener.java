@@ -16,11 +16,13 @@ import java.util.regex.Pattern;
 /**
  * Reacts to slayer chat. Recorded messages (2026-11-14):
  * {@code MINIBOSS! A Moonlit Hunter spawned. ...}, {@code   NICE! SLAYER BOSS SLAIN!},
- * {@code    » +25 Slayer XP • +79 Essence • +16 Moon Fang}.
+ * {@code    » +25 Slayer XP • +79 Essence • +16 Moon Fang}; with no pity item set (2026-11-16)
+ * {@code    » Pity Meter - Not set (66k XP saved)}.
  */
 public final class ChatListener {
     private static final Pattern MINIBOSS = Pattern.compile("MINIBOSS! An? (.+?) spawned");
     private static final Pattern ESSENCE_GAIN = Pattern.compile("\\+([\\d,]+) Essence");
+    static final Pattern PITY_SAVED = Pattern.compile("pity meter\\s*[-–—:]\\s*not set\\s*\\(([\\d.,]+[kmbt]?) xp saved\\)");
 
     private ChatListener() {}
 
@@ -43,6 +45,16 @@ public final class ChatListener {
             if (cfg.slainChatLink) {
                 // A few ticks later, so the link lands under the server's kill summary.
                 SlayersClient.schedule(5, ChatListener::sendMenuLink);
+            }
+            return;
+        }
+
+        Matcher p = PITY_SAVED.matcher(Txt.norm(text));
+        if (p.find()) {
+            double saved = Txt.num(p.group(1));
+            if (!Double.isNaN(saved)) {
+                cfg.pitySaved.put(SidebarState.INSTANCE.pityKey(), saved);
+                SlayersConfig.save();
             }
             return;
         }

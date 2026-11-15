@@ -172,6 +172,10 @@ public final class SlayerHud {
         out.add(Line.text("Pity Meter", Draw.PURPLE));
         if (!s.pitySet) {
             out.add(Line.text("Not set – choose one with /pity", Draw.MUTED));
+            // the sidebar does not show the stored XP; the kill summary does ("Pity Meter - Not set (66k XP saved)")
+            Double saved = SlayersConfig.get().pitySaved.get(s.pityKey());
+            out.add(saved != null ? Line.text(Txt.fmt(saved) + " XP saved", Draw.GOLD)
+                    : Line.text("XP saved: shown after your next kill", Draw.MUTED));
             return out;
         }
         out.add(Line.text(s.pityItem, Draw.TEXT));

@@ -123,6 +123,11 @@ public final class SidebarState {
         }
     }
 
+    /** Key for per-slayer pity data: the current area, or "" in the hub. */
+    public String pityKey() {
+        return area == null ? "" : Txt.norm(area);
+    }
+
     /** Essence from the sidebar, as a number, or NaN outside slayer areas. */
     public double essence() {
         return essenceText == null ? Double.NaN : Txt.num(essenceText);

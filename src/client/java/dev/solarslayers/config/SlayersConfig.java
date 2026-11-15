@@ -67,6 +67,8 @@ public final class SlayersConfig {
     public List<String> minionNames = new ArrayList<>(List.of("Moonfang"));
     /** Slayer name (normalised) → level, read from the sidebar while in that slayer's area. */
     public Map<String, Integer> slayerLevels = new HashMap<>();
+    /** Slayer area (normalised) → pity XP saved while no pity item is set, from the kill summary. */
+    public Map<String, Double> pitySaved = new HashMap<>();
     /** Exact essence last seen in the Upgrade Shop, kept up to date from kill messages. */
     public double essence = Double.NaN;
 
@@ -109,6 +111,7 @@ public final class SlayersConfig {
         if (minibossNames == null) minibossNames = d.minibossNames;
         if (minionNames == null) minionNames = d.minionNames;
         if (slayerLevels == null) slayerLevels = new HashMap<>();
+        if (pitySaved == null) pitySaved = new HashMap<>();
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
         highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));
