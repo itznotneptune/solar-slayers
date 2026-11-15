@@ -23,6 +23,8 @@ many renamed Minecraft APIs, so its branch carries its own port of the code and 
   `MINIBOSS! A <name> spawned` chat line.
 - **Minion highlight**: the minions a boss calls (the Moonfang Alpha's pups at T3) in their own colour. With
   "Only my boss" on, only minions within 24 blocks of your boss.
+- **Blaze minion highlight**: the Solar Flare's minions (`Solar Flare Minion`) in their own colour, under
+  Blaze Slayer in the menu. Follows "Only my boss" the same way.
 - **No quest warning**: red title, white subtitle and a ding when you hit slayer mobs without an active quest.
 - **Slayer progress HUD**: boss HP, time left and ward state while the boss is alive; otherwise XP until the boss and
   kills left (XP per kill is configurable, default 5).

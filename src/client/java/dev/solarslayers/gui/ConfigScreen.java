@@ -70,6 +70,12 @@ public final class ConfigScreen extends Screen {
                         () -> c.minionHighlight, v -> c.minionHighlight = v),
                 new Option.Color("Minion Colour", "Colour used for the minion highlight.",
                         () -> c.minionColor, v -> c.minionColor = v))));
+        categories.add(new Category("Blaze Slayer", List.of(
+                new Option.Toggle("Blaze Minion Highlight", "Colour the Solar Flare's minions (\"Solar Flare Minion\"). "
+                        + "With Only My Boss on, only minions near your boss.",
+                        () -> c.blazeMinionHighlight, v -> c.blazeMinionHighlight = v),
+                new Option.Color("Blaze Minion Colour", "Colour used for the Solar Flare minion highlight.",
+                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v))));
         categories.add(new Category("Slayer HUD", List.of(
                 new Option.Toggle("Slayer Progress", "Boss HP and time left while it is alive; otherwise XP until the boss and kills left.",
                         () -> c.progressHud, v -> c.progressHud = v),

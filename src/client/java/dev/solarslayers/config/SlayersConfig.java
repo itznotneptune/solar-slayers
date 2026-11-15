@@ -35,6 +35,8 @@ public final class SlayersConfig {
     public int minibossColor = 0xFFFFA62B;
     public boolean minionHighlight = true;
     public int minionColor = 0xFFB86BFF;
+    public boolean blazeMinionHighlight = true;
+    public int blazeMinionColor = 0xFFB86BFF;
 
     // HUD
     public boolean hudOnlyInSlayer = true;
