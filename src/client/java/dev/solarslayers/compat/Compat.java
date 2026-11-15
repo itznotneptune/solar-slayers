@@ -10,6 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 public final class Compat {
     private Compat() {}
 
+    public static Identifier id(String namespace, String path) {
+        return Identifier.fromNamespaceAndPath(namespace, path);
+    }
+
     public static KeyMapping.Category keyCategory(String namespace, String path) {
         return KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }

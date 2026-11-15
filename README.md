@@ -17,12 +17,14 @@ merged into the other branches. On `1.21.9` only `compat/Compat.java` differs. `
 many renamed Minecraft APIs, so its branch carries its own port of the code and needs Java 25 to play.
 
 ## Features
-- **Boss highlight**: your slayer boss is drawn full-bright in a solid colour you pick. "Only my boss" uses the
-  `Spawned by: <you>` label above it.
+- **Boss highlight**: your slayer boss is drawn full-bright with a layer of the colour you pick over it, so the colour
+  stays true on any texture (opacity adjustable). "Only my boss" uses the `Spawned by: <you>` label above it.
 - **Miniboss highlight**: same, for minibosses such as the Moonlit Hunter. New minibosses are learned from the
   `MINIBOSS! A <name> spawned` chat line.
 - **Minion highlight**: the minions a boss calls (the Moonfang Alpha's pups at T3) in their own colour. With
   "Only my boss" on, only minions within 24 blocks of your boss.
+- **Blaze minion highlight**: the Solar Flare's minions (`Solar Flare Minion`) in their own colour, under
+  Blaze Slayer in the menu. Follows "Only my boss" the same way.
 - **No quest warning**: red title, white subtitle and a ding when you hit slayer mobs without an active quest.
 - **Slayer progress HUD**: boss HP, time left and ward state while the boss is alive; otherwise XP until the boss and
   kills left (XP per kill is configurable, default 5).

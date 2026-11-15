@@ -20,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Finds slayer bosses and minibosses among loaded entities. Recorded naming (2026-11-14):
  * boss wolf {@code ☠ Moonfang Alpha 1.5k❤} (prefixed {@code WARDED } while warded), with a text display just above it
  * reading {@code ☠ Moonfang Alpha 1.5k❤\n03:00\nSpawned by: <player>}; miniboss {@code Moonlit Hunter 250/250❤};
- * T3 pups (minions) {@code Moonfang 250/250❤}, unlike the area mobs {@code Feral Moonfang} / {@code Savage Moonfang}.
+ * T3 pups (minions) {@code Moonfang 250/250❤}, unlike the area mobs {@code Feral Moonfang} / {@code Savage Moonfang};
+ * Solar Flare minions {@code Solar Flare Minion 2.5k/2.5k❤}. Name matching lives in {@link MobNames}.
  */
 public final class EntityScanner {
     public static final EntityScanner INSTANCE = new EntityScanner();
@@ -54,6 +55,7 @@ public final class EntityScanner {
         List<Vec3> myLabels = new ArrayList<>();
         List<LivingEntity> bosses = new ArrayList<>();
         List<LivingEntity> others = new ArrayList<>();
+        List<LivingEntity> blazeMinions = new ArrayList<>();
         for (Entity e : mc.level.entitiesForRendering()) {
             if (e instanceof Display.TextDisplay td) {
                 Component text = ((TextDisplayAccessor) td).solarslayers$getText();
@@ -61,9 +63,12 @@ public final class EntityScanner {
                 continue;
             }
             if (!(e instanceof LivingEntity le) || !le.hasCustomName() || le.getCustomName() == null) continue;
-            String name = stripWarded(Txt.clean(le.getCustomName().getString()));
-            if (name.startsWith("☠")) {
+            String raw = le.getCustomName().getString();
+            String name = stripWarded(Txt.clean(raw));
+            if (MobNames.isBoss(raw)) {
                 bosses.add(le);
+            } else if (MobNames.isBlazeMinion(raw)) {
+                blazeMinions.add(le);
             } else if (isMiniboss(name, cfg)) {
                 if (cfg.minibossHighlight) highlights.put(le.getId(), cfg.minibossColor);
             } else {
@@ -90,12 +95,15 @@ public final class EntityScanner {
 
         if (cfg.minionHighlight && !others.isEmpty()) {
             List<String> bossNames = new ArrayList<>();
-            for (LivingEntity b : bosses) bossNames.add(baseName(stripWarded(Txt.clean(b.getCustomName().getString()))));
+            for (LivingEntity b : bosses) bossNames.add(MobNames.base(b.getCustomName().getString()));
             for (LivingEntity le : others) {
-                String base = baseName(stripWarded(Txt.clean(le.getCustomName().getString())));
-                if (!isMinion(base, bossNames, cfg.minionNames)) continue;
-                if (cfg.onlyMyBoss && (myBoss == null || le.distanceToSqr(myBoss) > MINION_RANGE_SQ)) continue;
-                highlights.put(le.getId(), cfg.minionColor);
+                if (!MobNames.isMinion(MobNames.base(le.getCustomName().getString()), bossNames, cfg.minionNames)) continue;
+                if (nearMyBoss(le, cfg)) highlights.put(le.getId(), cfg.minionColor);
+            }
+        }
+        if (cfg.blazeMinionHighlight) {
+            for (LivingEntity le : blazeMinions) {
+                if (nearMyBoss(le, cfg)) highlights.put(le.getId(), cfg.blazeMinionColor);
             }
         }
 
@@ -112,28 +120,9 @@ public final class EntityScanner {
         return name.startsWith("WARDED ") ? name.substring(7).trim() : name;
     }
 
-    /** {@code ☠ Moonfang Alpha 5k❤} → {@code Moonfang Alpha}; {@code Moonfang 250/250❤} → {@code Moonfang}. */
-    static String baseName(String name) {
-        String n = name.startsWith("☠") ? name.substring(1).trim() : name;
-        int space = n.lastIndexOf(' ');
-        if (n.endsWith("❤") && space > 0) n = n.substring(0, space);
-        return n.trim();
-    }
-
-    /**
-     * A known minion name, or a name the boss's own name starts with ("Moonfang" for the "Moonfang Alpha"), so other
-     * slayers' minions are picked up without a list. Whole-name match only, so "Feral Moonfang" is never a minion.
-     */
-    static boolean isMinion(String base, List<String> bossNames, List<String> known) {
-        if (base.isEmpty()) return false;
-        for (String m : known) {
-            if (base.equalsIgnoreCase(m)) return true;
-        }
-        String prefix = base + " ";
-        for (String b : bossNames) {
-            if (b.regionMatches(true, 0, prefix, 0, prefix.length())) return true;
-        }
-        return false;
+    /** With "Only My Boss" on, a minion counts only near the player's own boss. */
+    private boolean nearMyBoss(LivingEntity le, SlayersConfig cfg) {
+        return !cfg.onlyMyBoss || (myBoss != null && le.distanceToSqr(myBoss) <= MINION_RANGE_SQ);
     }
 
     private static boolean isMiniboss(String name, SlayersConfig cfg) {

@@ -61,6 +61,8 @@ public final class ConfigScreen extends Screen {
                 new Option.Color("Boss Colour", "Colour used for the boss highlight.", () -> c.bossColor, v -> c.bossColor = v),
                 new Option.Toggle("Only My Boss", "Highlight only the boss you spawned, not other players' bosses.",
                         () -> c.onlyMyBoss, v -> c.onlyMyBoss = v),
+                new Option.Slider("Highlight Opacity", "How solid the highlight colour is drawn over the mob. 100% hides its texture.",
+                        20, 100, "%", () -> c.highlightOpacity, v -> c.highlightOpacity = v),
                 new Option.Toggle("Miniboss Highlight", "Colour minibosses such as the Moonlit Hunter. New minibosses are learned from chat.",
                         () -> c.minibossHighlight, v -> c.minibossHighlight = v),
                 new Option.Color("Miniboss Colour", "Colour used for the miniboss highlight.",
@@ -70,6 +72,12 @@ public final class ConfigScreen extends Screen {
                         () -> c.minionHighlight, v -> c.minionHighlight = v),
                 new Option.Color("Minion Colour", "Colour used for the minion highlight.",
                         () -> c.minionColor, v -> c.minionColor = v))));
+        categories.add(new Category("Blaze Slayer", List.of(
+                new Option.Toggle("Blaze Minion Highlight", "Colour the Solar Flare's minions (\"Solar Flare Minion\"). "
+                        + "With Only My Boss on, only minions near your boss.",
+                        () -> c.blazeMinionHighlight, v -> c.blazeMinionHighlight = v),
+                new Option.Color("Blaze Minion Colour", "Colour used for the Solar Flare minion highlight.",
+                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v))));
         categories.add(new Category("Slayer HUD", List.of(
                 new Option.Toggle("Slayer Progress", "Boss HP and time left while it is alive; otherwise XP until the boss and kills left.",
                         () -> c.progressHud, v -> c.progressHud = v),
