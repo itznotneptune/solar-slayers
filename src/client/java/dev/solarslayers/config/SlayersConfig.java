@@ -44,6 +44,8 @@ public final class SlayersConfig {
     public boolean hudOnlyInSlayer = true;
     public boolean progressHud = true;
     public boolean pityHud = true;
+    /** Pity bar shows boss kills left instead of XP and percent. */
+    public boolean pityShowBosses = false;
     public boolean trackerHud = true;
     public boolean timerHud = true;
     public int xpPerKill = 5;
@@ -71,6 +73,8 @@ public final class SlayersConfig {
     public Map<String, Integer> slayerLevels = new HashMap<>();
     /** Slayer area (normalised) → pity XP saved while no pity item is set, from the kill summary. */
     public Map<String, Double> pitySaved = new HashMap<>();
+    /** Slayer area (normalised) → Slayer XP from the last boss kill; the pity meter fills by the same amount. */
+    public Map<String, Double> bossXp = new HashMap<>();
     /** Exact essence last seen in the Upgrade Shop, kept up to date from kill messages. */
     public double essence = Double.NaN;
 
@@ -115,6 +119,7 @@ public final class SlayersConfig {
         if (minionNames == null) minionNames = d.minionNames;
         if (slayerLevels == null) slayerLevels = new HashMap<>();
         if (pitySaved == null) pitySaved = new HashMap<>();
+        if (bossXp == null) bossXp = new HashMap<>();
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
         highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));

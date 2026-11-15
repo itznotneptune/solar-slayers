@@ -169,7 +169,8 @@ public final class SlayerHud {
         if (preview && !s.inSlayer) {
             out.add(Line.text("Pity Meter", Draw.PURPLE));
             out.add(Line.text("250 Slayer Essence", Draw.TEXT));
-            out.add(Line.bar("100/250 (40%)", Draw.MUTED, 0.4, 0xFFC08CFF));
+            out.add(Line.bar(SlayersConfig.get().pityShowBosses ? "6 bosses left" : "100/250 (40%)",
+                    Draw.MUTED, 0.4, 0xFFC08CFF));
             return out;
         }
         if (!s.inSlayer) return out;
@@ -184,10 +185,23 @@ public final class SlayerHud {
         }
         out.add(Line.text(s.pityItem, Draw.TEXT));
         if (s.pityPct >= 0) {
-            out.add(Line.bar(Txt.fmt(s.pityHave) + "/" + Txt.fmt(s.pityNeed) + " (" + s.pityPct + "%)",
-                    Draw.MUTED, s.pityPct / 100.0, 0xFFC08CFF));
+            String label = Txt.fmt(s.pityHave) + "/" + Txt.fmt(s.pityNeed) + " (" + s.pityPct + "%)";
+            if (SlayersConfig.get().pityShowBosses) {
+                // the meter fills by the boss's Slayer XP (recorded: +25 Slayer XP took it from 100/250 to 125/250);
+                // until a kill has shown that amount, the numbers stay
+                long left = bossesLeft(s.pityHave, s.pityNeed, SlayersConfig.get().bossXp.get(s.pityKey()));
+                if (left == 0) label = "Meter full";
+                else if (left > 0) label = left + (left == 1 ? " boss left" : " bosses left");
+            }
+            out.add(Line.bar(label, Draw.MUTED, s.pityPct / 100.0, 0xFFC08CFF));
         }
         return out;
+    }
+
+    /** Boss kills until the pity meter is full, or -1 when unknown. 0 means it is already full. */
+    static long bossesLeft(double have, double need, Double perBoss) {
+        if (perBoss == null || perBoss <= 0 || Double.isNaN(have) || Double.isNaN(need)) return -1;
+        return (long) Math.ceil(Math.max(0, need - have) / perBoss);
     }
 
     private static List<Line> timer(boolean preview) {

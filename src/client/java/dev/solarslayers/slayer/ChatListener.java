@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public final class ChatListener {
     private static final Pattern MINIBOSS = Pattern.compile("MINIBOSS! An? (.+?) spawned");
     private static final Pattern ESSENCE_GAIN = Pattern.compile("\\+([\\d,]+) Essence");
+    private static final Pattern SLAYER_XP_GAIN = Pattern.compile("\\+([\\d,]+) Slayer XP");
     static final Pattern PITY_SAVED = Pattern.compile("pity meter\\s*[-–—:]\\s*not set\\s*\\(([\\d.,]+[kmbt]?) xp saved\\)");
 
     private ChatListener() {}
@@ -74,6 +75,14 @@ public final class ChatListener {
         }
 
         if (text.startsWith("»") && text.contains("Slayer XP")) {
+            Matcher x = SLAYER_XP_GAIN.matcher(text);
+            if (x.find()) {
+                double xp = Txt.num(x.group(1));
+                if (xp > 0) {
+                    cfg.bossXp.put(SidebarState.INSTANCE.pityKey(), xp);
+                    SlayersConfig.save();
+                }
+            }
             Matcher e = ESSENCE_GAIN.matcher(text);
             if (e.find() && !Double.isNaN(cfg.essence)) {
                 cfg.essence += Txt.num(e.group(1));

@@ -86,6 +86,9 @@ public final class ConfigScreen extends Screen {
                         1, 50, " XP", () -> c.xpPerKill, v -> c.xpPerKill = v),
                 new Option.Toggle("Pity Meter", "Your selected pity item and how close the meter is.",
                         () -> c.pityHud, v -> c.pityHud = v),
+                new Option.Toggle("Pity in Bosses", "Show how many bosses are left until the pity drop instead of the XP and "
+                        + "percentage. Uses the Slayer XP from your last kill, so it appears after one kill.",
+                        () -> c.pityShowBosses, v -> c.pityShowBosses = v),
                 new Option.Toggle("Slayer Timer", "How long the boss took to spawn and to kill, bosses killed this session and "
                         + "bosses per hour. Breaks over 10 minutes between slayer messages don't count against the rate.",
                         () -> c.timerHud, v -> c.timerHud = v),

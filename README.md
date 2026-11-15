@@ -32,6 +32,7 @@ many renamed Minecraft APIs, so its branch carries its own port of the code and 
 - **Slayer progress HUD**: boss HP, time left and ward state while the boss is alive; otherwise XP until the boss and
   kills left (XP per kill is configurable, default 5).
 - **Pity meter HUD**: selected pity item and meter progress; with none set, the XP saved (from the kill summary).
+  "Pity in Bosses" shows boss kills left instead of XP and percent, using the Slayer XP of your last kill.
 - **Slayer timer HUD**: time to spawn and to kill the boss (from the `SLAYER QUEST STARTED!`, `SLAYER BOSS SPAWNED!`
   and `SLAYER BOSS SLAIN!` chat lines), last run, bosses this session, bosses per hour, average and best. Gaps over
   10 minutes between slayer messages don't count against the hourly rate.
