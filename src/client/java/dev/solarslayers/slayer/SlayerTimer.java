@@ -5,8 +5,8 @@ package dev.solarslayers.slayer;
  * SLAIN!} (or {@code SLAYER QUEST FAILED!}). Times are wall-clock milliseconds passed in by the caller, so the logic can
  * be checked without a game.
  *
- * <p>Bosses per hour counts only active time: each gap between two slayer events (and the time since the last one)
- * counts up to {@link #IDLE_CAP_MS}, so a break away from slayers does not drag the rate down.
+ * <p>Bosses per hour counts only active time: each gap between two slayer events counts up to {@link #IDLE_CAP_MS},
+ * so a break away from slayers does not drag the rate down. It is recalculated only when a boss dies.
  */
 public final class SlayerTimer {
     public static final SlayerTimer INSTANCE = new SlayerTimer();
@@ -28,6 +28,7 @@ public final class SlayerTimer {
     private long bestMs = -1;
     private long activeMs;
     private long lastEvent = -1;
+    private double rate = Double.NaN; // bosses per hour as of the last kill
 
     private SlayerTimer() {}
 
@@ -69,6 +70,8 @@ public final class SlayerTimer {
         }
         questStart = -1;
         spawnAt = -1;
+        // fixed until the next kill, so the shown rate does not tick down between bosses
+        rate = activeMs > 0 ? kills * 3_600_000.0 / activeMs : Double.NaN;
     }
 
     public void onQuestFail(long now) {
@@ -85,6 +88,7 @@ public final class SlayerTimer {
         activeMs = 0;
         lastEvent = -1;
         lastSpawnMs = lastKillMs = -1;
+        rate = Double.NaN;
     }
 
     // ---- read side ----
@@ -129,11 +133,12 @@ public final class SlayerTimer {
         return activeMs + Math.min(Math.max(0, now - lastEvent), IDLE_CAP_MS);
     }
 
-    /** Bosses killed per hour of active time, or NaN before the first kill. */
-    public double perHour(long now) {
-        long active = activeMs(now);
-        if (kills == 0 || active <= 0) return Double.NaN;
-        return kills * 3_600_000.0 / active;
+    /**
+     * Bosses killed per hour of active time, worked out when the last boss died and unchanged until the next kill;
+     * NaN before the first kill.
+     */
+    public double perHour() {
+        return rate;
     }
 
     /** {@code 75_000} → {@code 1:15}; {@code 3_725_000} → {@code 1:02:05}. */

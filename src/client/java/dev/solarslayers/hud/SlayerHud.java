@@ -217,7 +217,7 @@ public final class SlayerHud {
             out.add(Line.text("Last kill: " + SlayerTimer.clock(t.lastKillMs()), Draw.MUTED));
         }
         if (t.kills() > 0) {
-            double rate = t.perHour(now);
+            double rate = t.perHour();
             out.add(Line.text("Bosses: " + t.kills() + (Double.isNaN(rate) ? "" : String.format(" · %.1f/hr", rate)), Draw.GOOD));
             if (t.averageMs() >= 0) {
                 out.add(Line.text("Average " + SlayerTimer.clock(t.averageMs()) + " · Best " + SlayerTimer.clock(t.bestMs()), Draw.MUTED));
