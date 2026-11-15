@@ -121,6 +121,24 @@ public final class SidebarState {
             Integer old = SlayersConfig.get().slayerLevels.put(Txt.norm(area), level);
             if (old == null || old != level) SlayersConfig.save();
         }
+        if (pitySet) forgetSavedPity();
+    }
+
+    /**
+     * A pity item is set, so the XP saved while none was set has gone into it (and may be used up by a drop). Drop the
+     * remembered "XP saved" amounts; the next "Not set (... XP saved)" kill summary brings the real figure back.
+     */
+    public static void forgetSavedPity() {
+        SlayersConfig cfg = SlayersConfig.get();
+        if (!cfg.pitySaved.isEmpty()) {
+            cfg.pitySaved.clear();
+            SlayersConfig.save();
+        }
+    }
+
+    /** Key for per-slayer pity data: the current area, or "" in the hub. */
+    public String pityKey() {
+        return area == null ? "" : Txt.norm(area);
     }
 
     /** Essence from the sidebar, as a number, or NaN outside slayer areas. */

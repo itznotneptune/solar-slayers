@@ -39,19 +39,29 @@ public final class SlayersConfig {
     public int minionColor = 0xFFB86BFF;
     public boolean blazeMinionHighlight = true;
     public int blazeMinionColor = 0xFFB86BFF;
+    public boolean solarMobHighlight = true;
+    public int solarMobColor = 0xFF4FC3F7;
 
     // HUD
     public boolean hudOnlyInSlayer = true;
     public boolean progressHud = true;
     public boolean pityHud = true;
+    /** Pity bar shows boss kills left instead of XP and percent. */
+    public boolean pityShowBosses = false;
     public boolean trackerHud = true;
+    public boolean timerHud = true;
     public int xpPerKill = 5;
     public HudPos progressPos = new HudPos(6, 70, 1f);
     public HudPos pityPos = new HudPos(6, 135, 1f);
     public HudPos trackerPos = new HudPos(6, 180, 1f);
+    public HudPos timerPos = new HudPos(6, 240, 1f);
 
     // Chat
     public boolean slainChatLink = true;
+
+    // World
+    /** How dark prismarine blocks are drawn, percent: 0 = unchanged, 100 = black. */
+    public int prismarineShade = 0;
 
     // Upgrade tracker
     public boolean shopTracker = true;
@@ -63,6 +73,10 @@ public final class SlayersConfig {
     public List<String> minionNames = new ArrayList<>(List.of("Moonfang"));
     /** Slayer name (normalised) → level, read from the sidebar while in that slayer's area. */
     public Map<String, Integer> slayerLevels = new HashMap<>();
+    /** Slayer area (normalised) → pity XP saved while no pity item is set, from the kill summary. */
+    public Map<String, Double> pitySaved = new HashMap<>();
+    /** Slayer area (normalised) → Slayer XP from the last boss kill; the pity meter fills by the same amount. */
+    public Map<String, Double> bossXp = new HashMap<>();
     /** Exact essence last seen in the Upgrade Shop, kept up to date from kill messages. */
     public double essence = Double.NaN;
 
@@ -101,13 +115,17 @@ public final class SlayersConfig {
         if (progressPos == null) progressPos = d.progressPos;
         if (pityPos == null) pityPos = d.pityPos;
         if (trackerPos == null) trackerPos = d.trackerPos;
+        if (timerPos == null) timerPos = d.timerPos;
         if (tracked == null) tracked = new ArrayList<>();
         if (minibossNames == null) minibossNames = d.minibossNames;
         if (minionNames == null) minionNames = d.minionNames;
         if (slayerLevels == null) slayerLevels = new HashMap<>();
+        if (pitySaved == null) pitySaved = new HashMap<>();
+        if (bossXp == null) bossXp = new HashMap<>();
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
         highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));
+        prismarineShade = Math.max(0, Math.min(100, prismarineShade));
     }
 
     public static final class HudPos {
