@@ -108,6 +108,10 @@ public final class ConfigScreen extends Screen {
                     s.changed();
                 }),
                 new Option.Info("Essence", "Your exact Essence is read when you open the Upgrade Shop, then kept up to date from boss kills."))));
+        categories.add(new Category("World", List.of(
+                new Option.Slider("Prismarine Shade", "Darkens prismarine, prismarine bricks and dark prismarine (with their stairs, "
+                        + "slabs and wall). 0% leaves them as they are, 100% makes them black.",
+                        0, 100, "%", () -> c.prismarineShade, v -> c.prismarineShade = v))));
         categories.add(new Category("Coming Soon", List.of(
                 new Option.Info("Auto Restart Quest", "Starts the same tier again after a boss dies. "
                         + "Waits on the server adding /slayer start."))));

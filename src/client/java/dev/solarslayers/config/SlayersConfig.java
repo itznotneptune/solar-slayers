@@ -53,6 +53,10 @@ public final class SlayersConfig {
     // Chat
     public boolean slainChatLink = true;
 
+    // World
+    /** How dark prismarine blocks are drawn, percent: 0 = unchanged, 100 = black. */
+    public int prismarineShade = 0;
+
     // Upgrade tracker
     public boolean shopTracker = true;
     public List<TrackedItem> tracked = new ArrayList<>();
@@ -108,6 +112,7 @@ public final class SlayersConfig {
         questWarningCooldown = Math.max(1, Math.min(60, questWarningCooldown));
         xpPerKill = Math.max(1, Math.min(100, xpPerKill));
         highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));
+        prismarineShade = Math.max(0, Math.min(100, prismarineShade));
     }
 
     public static final class HudPos {
