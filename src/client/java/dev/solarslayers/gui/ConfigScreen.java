@@ -78,7 +78,12 @@ public final class ConfigScreen extends Screen {
                         + "With Only My Boss on, only minions near your boss.",
                         () -> c.blazeMinionHighlight, v -> c.blazeMinionHighlight = v),
                 new Option.Color("Blaze Minion Colour", "Colour used for the Solar Flare minion highlight.",
-                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v))));
+                        () -> c.blazeMinionColor, v -> c.blazeMinionColor = v),
+                new Option.Toggle("Solar Mob Highlight", "Colour the normal Solar slayer mobs (blazes and zombified piglins "
+                        + "with a health bar, like Solar Blaze), in the slayer world only.",
+                        () -> c.solarMobHighlight, v -> c.solarMobHighlight = v),
+                new Option.Color("Solar Mob Colour", "Colour used for the normal Solar slayer mobs.",
+                        () -> c.solarMobColor, v -> c.solarMobColor = v))));
         categories.add(new Category("Slayer HUD", List.of(
                 new Option.Toggle("Slayer Progress", "Boss HP and time left while it is alive; otherwise XP until the boss and kills left.",
                         () -> c.progressHud, v -> c.progressHud = v),
