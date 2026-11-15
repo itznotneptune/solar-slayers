@@ -64,13 +64,19 @@ public final class ChatListener {
             return;
         }
 
-        Matcher p = PITY_SAVED.matcher(Txt.norm(text));
+        String norm = Txt.norm(text);
+        Matcher p = PITY_SAVED.matcher(norm);
         if (p.find()) {
             double saved = Txt.num(p.group(1));
             if (!Double.isNaN(saved)) {
                 cfg.pitySaved.put(SidebarState.INSTANCE.pityKey(), saved);
                 SlayersConfig.save();
             }
+            return;
+        }
+        if (norm.contains("pity meter") && !norm.contains("not set")) {
+            // "» Pity Meter [|||…] 50% (125/250 XP) (...)": a pity item is set, so any saved figure is out of date
+            SidebarState.forgetSavedPity();
             return;
         }
 
