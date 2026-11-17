@@ -8,7 +8,11 @@ public final class Txt {
     private Txt() {}
 
     private static final Pattern SECTION = Pattern.compile("§.");
-    private static final Pattern ICON = Pattern.compile("\\[item/[^\\]]*@items\\]\\s*");
+    /**
+     * Sprite icons the server puts in names and the sidebar, as {@code getString()} spells them: 1.21.11 adds the atlas
+     * ({@code [item/clock_00@items]}), 1.21.9 and 1.21.10 don't ({@code [item/clock_00]}).
+     */
+    private static final Pattern ICON = Pattern.compile("\\[(?:item|block)/[^\\]\\s]*\\]\\s*");
     private static final String SMALL = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀѕꜱᴛᴜᴠᴡʏᴢ";
     private static final String PLAIN = "abcdefghijklmnopqrsstuvwyz";
 
