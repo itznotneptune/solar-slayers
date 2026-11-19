@@ -8,6 +8,7 @@ import dev.solarslayers.hud.SlayerHud;
 import dev.solarslayers.slayer.ChatListener;
 import dev.solarslayers.slayer.EntityScanner;
 import dev.solarslayers.slayer.QuestWarning;
+import dev.solarslayers.slayer.SessionStats;
 import dev.solarslayers.slayer.ShopTracker;
 import dev.solarslayers.slayer.SidebarState;
 import net.fabricmc.api.ClientModInitializer;
@@ -77,6 +78,7 @@ public final class SlayersClient implements ClientModInitializer {
 
         if (mc.player != null && mc.level != null) {
             SidebarState.INSTANCE.update(mc);
+            SessionStats.INSTANCE.onSidebar(SidebarState.INSTANCE.quest, SidebarState.INSTANCE.xpHave, System.currentTimeMillis());
             EntityScanner.INSTANCE.update(mc);
             ShopTracker.tick(mc);
             PrismarineShade.tick(mc);
