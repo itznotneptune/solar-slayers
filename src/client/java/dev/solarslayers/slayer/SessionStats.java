@@ -30,7 +30,9 @@ public final class SessionStats {
     public static final long IDLE_CAP_MS = 3 * 60_000L;
 
     public enum Rarity {
-        DROP("Drop"), RARE("Rare"), VERY_RARE("Very Rare"), CRAZY_RARE("Crazy Rare");
+        DROP("Drop"), RARE("Rare"), VERY_RARE("Very Rare"), CRAZY_RARE("Crazy Rare"),
+        /** {@code PITY METER! Your meter paid out (item)!}: not random, but counted with the drops. */
+        PITY("Pity");
 
         public final String label;
 
@@ -55,6 +57,7 @@ public final class SessionStats {
     }
 
     private static final Pattern DROP = Pattern.compile("^\\W*(CRAZY RARE |VERY RARE |RARE )?DROP!\\s*(.+)$");
+    private static final Pattern PITY_PAYOUT = Pattern.compile("^\\W*PITY METER!\\s*Your meter paid out\\s+(.+?)\\s*!?$");
     private static final Pattern GEN_SLOTS = Pattern.compile(
             "^\\+?([\\d,]+)\\s*x?\\s*gen\\s*slots?$|^gen\\s*slots?\\s*x\\s*([\\d,]+)$|^gen\\s*slots?$");
     private static final Pattern LEADING_COUNT = Pattern.compile("^\\+?[\\d,]+\\s*x?\\s+|\\s+x\\s*[\\d,]+$");
@@ -84,6 +87,14 @@ public final class SessionStats {
     /** Parses a cleaned chat line as a drop, or returns null when it isn't one. */
     public static Drop parseDrop(String text) {
         if (text == null) return null;
+        Matcher pity = PITY_PAYOUT.matcher(text.trim());
+        if (pity.matches()) {
+            String item = pity.group(1).trim();
+            if (item.startsWith("(") && item.endsWith(")") && matchingOpen(item, item.length() - 1) == 0) {
+                item = item.substring(1, item.length() - 1).trim();
+            }
+            return item.isEmpty() ? null : new Drop(Rarity.PITY, item, null);
+        }
         Matcher m = DROP.matcher(text.trim());
         if (!m.matches()) return null;
         Rarity rarity = switch (m.group(1) == null ? "" : m.group(1).trim()) {

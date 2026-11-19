@@ -144,6 +144,7 @@ public final class SlayerHud {
             case RARE -> 0xFF5599FF;
             case VERY_RARE -> Draw.PURPLE;
             case CRAZY_RARE -> Draw.GOLD;
+            case PITY -> 0xFFC08CFF;
         };
     }
 
@@ -164,7 +165,8 @@ public final class SlayerHud {
         out.add(Line.text("Drop " + st.drops(SessionStats.Rarity.DROP)
                 + " · Rare " + st.drops(SessionStats.Rarity.RARE)
                 + " · Very Rare " + st.drops(SessionStats.Rarity.VERY_RARE)
-                + " · Crazy " + st.drops(SessionStats.Rarity.CRAZY_RARE), Draw.MUTED));
+                + " · Crazy " + st.drops(SessionStats.Rarity.CRAZY_RARE)
+                + (st.drops(SessionStats.Rarity.PITY) > 0 ? " · Pity " + st.drops(SessionStats.Rarity.PITY) : ""), Draw.MUTED));
         List<SessionStats.ItemCount> items = st.items();
         for (int i = 0; i < Math.min(MAX_DROP_ITEMS, items.size()); i++) {
             SessionStats.ItemCount it = items.get(i);
@@ -173,7 +175,8 @@ public final class SlayerHud {
         if (items.size() > MAX_DROP_ITEMS) out.add(Line.text("+" + (items.size() - MAX_DROP_ITEMS) + " more", Draw.MUTED));
         SessionStats.Drop last = st.last();
         if (last != null) {
-            out.add(Line.text("Last: " + (last.rarity() == SessionStats.Rarity.DROP ? "" : last.rarity().label + " ")
+            out.add(Line.text("Last: " + (last.rarity() == SessionStats.Rarity.DROP ? ""
+                    : last.rarity() == SessionStats.Rarity.PITY ? "Pity payout: " : last.rarity().label + " ")
                     + last.item() + (last.luck() == null ? "" : " (" + last.luck() + ")"), Draw.MUTED));
         }
         return out;
