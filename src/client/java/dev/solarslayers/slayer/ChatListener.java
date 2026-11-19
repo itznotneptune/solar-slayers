@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
  * Reacts to slayer chat. Recorded messages (2026-11-14):
  * {@code MINIBOSS! A Moonlit Hunter spawned. ...}, {@code   NICE! SLAYER BOSS SLAIN!},
  * {@code    » +25 Slayer XP • +79 Essence • +16 Moon Fang}; with no pity item set (2026-11-16)
- * {@code    » Pity Meter - Not set (66k XP saved)}.
+ * {@code    » Pity Meter - Not set (66k XP saved)}; drops (2026-11-19, from the owner) {@code DROP! (10 Gen Slots) (luck)},
+ * also with {@code RARE}, {@code VERY RARE} and {@code CRAZY RARE} in front.
  */
 public final class ChatListener {
     private static final Pattern MINIBOSS = Pattern.compile("MINIBOSS! An? (.+?) spawned");
@@ -31,6 +32,12 @@ public final class ChatListener {
         if (overlay) return;
         String text = Txt.clean(message.getString());
         SlayersConfig cfg = SlayersConfig.get();
+
+        SessionStats.Drop drop = SessionStats.parseDrop(text);
+        if (drop != null) {
+            SessionStats.INSTANCE.onDrop(drop);
+            return;
+        }
 
         Matcher m = MINIBOSS.matcher(text);
         if (m.find()) {
@@ -57,6 +64,7 @@ public final class ChatListener {
 
         if (text.contains("SLAYER BOSS SLAIN!")) {
             SlayerTimer.INSTANCE.onBossKill(System.currentTimeMillis());
+            SessionStats.INSTANCE.onBossKill(System.currentTimeMillis());
             if (cfg.slainChatLink) {
                 // A few ticks later, so the link lands under the server's kill summary.
                 SlayersClient.schedule(5, ChatListener::sendMenuLink);

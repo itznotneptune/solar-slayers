@@ -2,6 +2,7 @@ package dev.solarslayers.gui;
 
 import dev.solarslayers.SlayersClient;
 import dev.solarslayers.config.SlayersConfig;
+import dev.solarslayers.slayer.SessionStats;
 import dev.solarslayers.slayer.SlayerTimer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -98,7 +99,15 @@ public final class ConfigScreen extends Screen {
                         + "bosses per hour. Breaks over 10 minutes between slayer messages don't count against the rate.",
                         () -> c.timerHud, v -> c.timerHud = v),
                 new Option.Button("Reset Timer Session", "Start the bosses-per-hour count and averages again from zero.",
-                        "Reset", s -> SlayerTimer.INSTANCE.resetSession()))));
+                        "Reset", s -> SlayerTimer.INSTANCE.resetSession()),
+                new Option.Toggle("RNG Drops", "Counts DROP!, RARE DROP!, VERY RARE DROP! and CRAZY RARE DROP! this "
+                        + "session, with each item and your last drop.",
+                        () -> c.dropsHud, v -> c.dropsHud = v),
+                new Option.Toggle("Session Stats", "Active time, mob and boss kills, and gen slots gained this session. "
+                        + "The clock stops 3 minutes after your last kill and carries on with the next one.",
+                        () -> c.statsHud, v -> c.statsHud = v),
+                new Option.Button("Reset Session Stats", "Start the session stats and RNG drop counts again from zero.",
+                        "Reset", s -> SessionStats.INSTANCE.reset()))));
         categories.add(new Category("Alerts", List.of(
                 new Option.Toggle("No Quest Warning", "Show a title when you hit slayer mobs without an active slayer quest.",
                         () -> c.questWarning, v -> c.questWarning = v),
