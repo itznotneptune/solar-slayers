@@ -55,6 +55,10 @@ public final class SlayersConfig {
     public HudPos pityPos = new HudPos(6, 135, 1f);
     public HudPos trackerPos = new HudPos(6, 180, 1f);
     public HudPos timerPos = new HudPos(6, 240, 1f);
+    public boolean dropsHud = true;
+    public HudPos dropsPos = new HudPos(124, 70, 1f);
+    public boolean statsHud = true;
+    public HudPos statsPos = new HudPos(124, 160, 1f);
 
     // Chat
     public boolean slainChatLink = true;
@@ -116,6 +120,8 @@ public final class SlayersConfig {
         if (pityPos == null) pityPos = d.pityPos;
         if (trackerPos == null) trackerPos = d.trackerPos;
         if (timerPos == null) timerPos = d.timerPos;
+        if (dropsPos == null) dropsPos = d.dropsPos;
+        if (statsPos == null) statsPos = d.statsPos;
         if (tracked == null) tracked = new ArrayList<>();
         if (minibossNames == null) minibossNames = d.minibossNames;
         if (minionNames == null) minionNames = d.minionNames;

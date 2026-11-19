@@ -38,6 +38,11 @@ many renamed Minecraft APIs, so its branch carries its own port of the code and 
 - **Slayer timer HUD**: time to spawn and to kill the boss (from the `SLAYER QUEST STARTED!`, `SLAYER BOSS SPAWNED!`
   and `SLAYER BOSS SLAIN!` chat lines), last run, bosses this session, bosses per hour, average and best. Gaps over
   10 minutes between slayer messages don't count against the hourly rate.
+- **RNG drops HUD**: counts `DROP!`, `RARE DROP!`, `VERY RARE DROP!`, `CRAZY RARE DROP!` and pity payouts (`PITY METER! Your
+  meter paid out (...)!`) this session, each item
+  (rarest first) and the last drop with its luck.
+- **Session stats HUD**: active time, mob kills (each rise in the sidebar's quest XP), boss kills and gen slots gained
+  (from `DROP! (10 Gen Slots)` lines). The clock stops 3 minutes after the last kill and carries on with the next one.
 - **Upgrade tracker**: right-click an item in the Upgrade Shop to track it (the click is not sent to the server, so it
   never crafts). Shows level, Essence and materials against what the item needs.
 - **Slayer menu link**: a clickable chat line after each boss kill that runs `/slayer`.

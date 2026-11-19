@@ -6,6 +6,7 @@ import dev.solarslayers.config.SlayersConfig.Requirement;
 import dev.solarslayers.config.SlayersConfig.TrackedItem;
 import dev.solarslayers.gui.Draw;
 import dev.solarslayers.slayer.EntityScanner;
+import dev.solarslayers.slayer.SessionStats;
 import dev.solarslayers.slayer.ShopTracker;
 import dev.solarslayers.slayer.SidebarState;
 import dev.solarslayers.slayer.SlayerTimer;
@@ -18,10 +19,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The HUD panels: slayer progress, pity meter, upgrade tracker and slayer timer. */
+/** The HUD panels: slayer progress, pity meter, upgrade tracker, slayer timer, RNG drops and session stats. */
 public final class SlayerHud {
     public enum Element {
-        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker"), TIMER("Slayer Timer");
+        PROGRESS("Slayer Progress"), PITY("Pity Meter"), TRACKER("Upgrade Tracker"), TIMER("Slayer Timer"),
+        DROPS("RNG Drops"), STATS("Session Stats");
 
         public final String label;
 
@@ -36,6 +38,8 @@ public final class SlayerHud {
                 case PITY -> c.pityPos;
                 case TRACKER -> c.trackerPos;
                 case TIMER -> c.timerPos;
+                case DROPS -> c.dropsPos;
+                case STATS -> c.statsPos;
             };
         }
 
@@ -46,6 +50,8 @@ public final class SlayerHud {
                 case PITY -> c.pityHud;
                 case TRACKER -> c.trackerHud && c.shopTracker;
                 case TIMER -> c.timerHud;
+                case DROPS -> c.dropsHud;
+                case STATS -> c.statsHud;
             };
         }
     }
@@ -125,7 +131,76 @@ public final class SlayerHud {
             case PITY -> pity(preview);
             case TRACKER -> tracker(preview);
             case TIMER -> timer(preview);
+            case DROPS -> drops(preview);
+            case STATS -> stats(preview);
         };
+    }
+
+    private static final int MAX_DROP_ITEMS = 6;
+
+    static int rarityColor(SessionStats.Rarity r) {
+        return switch (r) {
+            case DROP -> Draw.TEXT;
+            case RARE -> 0xFF5599FF;
+            case VERY_RARE -> Draw.PURPLE;
+            case CRAZY_RARE -> Draw.GOLD;
+            case PITY -> 0xFFC08CFF;
+        };
+    }
+
+    private static List<Line> drops(boolean preview) {
+        SessionStats st = SessionStats.INSTANCE;
+        List<Line> out = new ArrayList<>();
+        if (st.totalDrops() == 0) {
+            if (preview) {
+                out.add(Line.text("RNG Drops", Draw.GOLD));
+                out.add(Line.text("Drop 14 · Rare 3 · Very Rare 1 · Crazy 0", Draw.MUTED));
+                out.add(Line.text("Moon Fang Talisman ×1", rarityColor(SessionStats.Rarity.VERY_RARE)));
+                out.add(Line.text("Gen Slots ×12", Draw.TEXT));
+                out.add(Line.text("Last: Rare Moonhide (+50% Luck)", Draw.MUTED));
+            }
+            return out;
+        }
+        out.add(Line.text("RNG Drops", Draw.GOLD));
+        out.add(Line.text("Drop " + st.drops(SessionStats.Rarity.DROP)
+                + " · Rare " + st.drops(SessionStats.Rarity.RARE)
+                + " · Very Rare " + st.drops(SessionStats.Rarity.VERY_RARE)
+                + " · Crazy " + st.drops(SessionStats.Rarity.CRAZY_RARE)
+                + (st.drops(SessionStats.Rarity.PITY) > 0 ? " · Pity " + st.drops(SessionStats.Rarity.PITY) : ""), Draw.MUTED));
+        List<SessionStats.ItemCount> items = st.items();
+        for (int i = 0; i < Math.min(MAX_DROP_ITEMS, items.size()); i++) {
+            SessionStats.ItemCount it = items.get(i);
+            out.add(Line.text(it.name + " ×" + it.count, rarityColor(it.best)));
+        }
+        if (items.size() > MAX_DROP_ITEMS) out.add(Line.text("+" + (items.size() - MAX_DROP_ITEMS) + " more", Draw.MUTED));
+        SessionStats.Drop last = st.last();
+        if (last != null) {
+            out.add(Line.text("Last: " + (last.rarity() == SessionStats.Rarity.DROP ? ""
+                    : last.rarity() == SessionStats.Rarity.PITY ? "Pity payout: " : last.rarity().label + " ")
+                    + last.item() + (last.luck() == null ? "" : " (" + last.luck() + ")"), Draw.MUTED));
+        }
+        return out;
+    }
+
+    private static List<Line> stats(boolean preview) {
+        SessionStats st = SessionStats.INSTANCE;
+        long now = System.currentTimeMillis();
+        List<Line> out = new ArrayList<>();
+        boolean empty = st.mobKills() == 0 && st.bossKills() == 0 && st.genSlots() == 0;
+        if (empty && !preview) return out;
+        out.add(Line.text("Session Stats", Draw.GOLD));
+        if (empty) {
+            out.add(Line.text("Active: 42:10", Draw.TEXT));
+            out.add(Line.text("Mob kills: 318 · Bosses: 9", Draw.GOOD));
+            out.add(Line.text("Gen slots: +120", Draw.TEXT));
+            return out;
+        }
+        boolean paused = st.paused(now);
+        out.add(Line.text("Active: " + SlayerTimer.clock(st.activeMs(now)) + (paused ? " (paused)" : ""),
+                paused ? Draw.MUTED : Draw.TEXT));
+        out.add(Line.text("Mob kills: " + st.mobKills() + " · Bosses: " + st.bossKills(), Draw.GOOD));
+        out.add(Line.text("Gen slots: +" + st.genSlots(), Draw.TEXT));
+        return out;
     }
 
     private static List<Line> progress(boolean preview) {
