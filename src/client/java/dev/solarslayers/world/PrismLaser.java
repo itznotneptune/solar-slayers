@@ -52,7 +52,12 @@ public final class PrismLaser {
     /** Called on the client thread for each particle packet; true means drop it. */
     public static boolean onPacket(ClientboundLevelParticlesPacket p) {
         if (!SlayersConfig.get().prismLaserOutline) return false;
-        ParticleOptions o = p.getParticle();
+        // the only line that reads the packet: its getters differ between Minecraft versions
+        return onParticle(p.getParticle(), p.getX(), p.getY(), p.getZ(), p.getCount(), p.getXDist(), p.getYDist(), p.getZDist(), p.getMaxSpeed());
+    }
+
+    private static boolean onParticle(ParticleOptions o, double x, double y, double z, int count,
+                                      float dx, float dy, float dz, float speed) {
         LaserMatch.Type type;
         float scale = 0, r = 0, g = 0, b = 0;
         if (o instanceof DustParticleOptions d) {
@@ -69,12 +74,11 @@ public final class PrismLaser {
         } else {
             return false;
         }
-        LaserMatch.Kind kind = LaserMatch.classify(type, scale, r, g, b, p.getCount(),
-                p.getXDist(), p.getYDist(), p.getZDist(), p.getMaxSpeed());
+        LaserMatch.Kind kind = LaserMatch.classify(type, scale, r, g, b, count, dx, dy, dz, speed);
         switch (kind) {
-            case CORE -> cores.add(new Vec3(p.getX(), p.getY(), p.getZ()));
+            case CORE -> cores.add(new Vec3(x, y, z));
             case SIGNATURE -> signatureNow = true;
-            case EMITTER -> emitters.add(new Deferred(o, p.getX(), p.getY(), p.getZ(), tick));
+            case EMITTER -> emitters.add(new Deferred(o, x, y, z, tick));
             case BEAM -> { }
             case NONE -> { return false; }
         }
