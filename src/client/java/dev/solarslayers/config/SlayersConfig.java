@@ -66,6 +66,11 @@ public final class SlayersConfig {
     // World
     /** How dark prismarine blocks are drawn, percent: 0 = unchanged, 100 = black. */
     public int prismarineShade = 0;
+    /** Replace the Prism Laser's particles with a hollow outline. */
+    public boolean prismLaserOutline = true;
+    /** Outline in the laser's rainbow (still, softer); off uses {@link #prismLaserColor}. */
+    public boolean prismLaserRainbow = true;
+    public int prismLaserColor = 0xFFFFFFFF;
 
     // Upgrade tracker
     public boolean shopTracker = true;
