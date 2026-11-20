@@ -15,6 +15,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import dev.solarslayers.world.PrismLaser;
 import dev.solarslayers.world.PrismarineShade;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
@@ -82,6 +83,7 @@ public final class SlayersClient implements ClientModInitializer {
             EntityScanner.INSTANCE.update(mc);
             ShopTracker.tick(mc);
             PrismarineShade.tick(mc);
+            PrismLaser.tick(mc);
         } else {
             EntityScanner.INSTANCE.update(mc);
         }
