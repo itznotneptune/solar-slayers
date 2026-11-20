@@ -53,7 +53,7 @@ public final class PrismLaser {
     public static boolean onPacket(ClientboundLevelParticlesPacket p) {
         if (!SlayersConfig.get().prismLaserOutline) return false;
         // the only line that reads the packet: its getters differ between Minecraft versions
-        return onParticle(p.getParticle(), p.getX(), p.getY(), p.getZ(), p.getCount(), p.getXDist(), p.getYDist(), p.getZDist(), p.getMaxSpeed());
+        return onParticle(p.particle(), p.x(), p.y(), p.z(), p.count(), p.xDist(), p.yDist(), p.zDist(), p.xMaxSpeed());
     }
 
     private static boolean onParticle(ParticleOptions o, double x, double y, double z, int count,
