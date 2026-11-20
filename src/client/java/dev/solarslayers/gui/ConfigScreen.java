@@ -134,7 +134,15 @@ public final class ConfigScreen extends Screen {
         categories.add(new Category("World", List.of(
                 new Option.Slider("Prismarine Shade", "Darkens prismarine, prismarine bricks and dark prismarine (with their stairs, "
                         + "slabs and wall). 0% leaves them as they are, 100% makes them black.",
-                        0, 100, "%", () -> c.prismarineShade, v -> c.prismarineShade = v))));
+                        0, 100, "%", () -> c.prismarineShade, v -> c.prismarineShade = v),
+                new Option.Toggle("Prism Laser Outline", "Hide the Prism Laser's rainbow particles (anyone's) and draw a thin "
+                        + "hollow outline where the beam is instead.",
+                        () -> c.prismLaserOutline, v -> c.prismLaserOutline = v),
+                new Option.Toggle("Rainbow Outline", "Colour the outline like the laser, without the flicker. Off uses "
+                        + "the colour below.",
+                        () -> c.prismLaserRainbow, v -> c.prismLaserRainbow = v),
+                new Option.Color("Outline Colour", "Colour of the Prism Laser outline when Rainbow Outline is off.",
+                        () -> c.prismLaserColor, v -> c.prismLaserColor = v))));
         categories.add(new Category("Coming Soon", List.of(
                 new Option.Info("Auto Restart Quest", "Starts the same tier again after a boss dies. "
                         + "Waits on the server adding /slayer start."))));
