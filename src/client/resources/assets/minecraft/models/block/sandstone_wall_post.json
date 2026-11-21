@@ -1,0 +1,6 @@
+{
+  "parent": "solarslayers:block/tinted_template_wall_post",
+  "textures": {
+    "wall": "minecraft:block/sandstone"
+  }
+}

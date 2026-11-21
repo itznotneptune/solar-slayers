@@ -15,6 +15,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import dev.solarslayers.world.GraveShade;
 import dev.solarslayers.world.PrismLaser;
 import dev.solarslayers.world.PrismarineShade;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -65,6 +66,7 @@ public final class SlayersClient implements ClientModInitializer {
         AttackEntityCallback.EVENT.register(QuestWarning::onAttack);
         Compat.registerHud(MOD_ID, "hud", SlayerHud::render);
         PrismarineShade.register();
+        GraveShade.register();
 
         LOG.info("Solar Slayers loaded");
         System.out.println("[SolarSlayers] loaded: keybind registered, commands /slayer+ /slayerplus"); // Lunar only logs stdout
@@ -84,6 +86,7 @@ public final class SlayersClient implements ClientModInitializer {
             ShopTracker.tick(mc);
             PrismarineShade.tick(mc);
             PrismLaser.tick(mc);
+            GraveShade.tick(mc);
         } else {
             EntityScanner.INSTANCE.update(mc);
         }

@@ -1,0 +1,6 @@
+{
+  "parent": "solarslayers:block/tinted_cube_all",
+  "textures": {
+    "all": "minecraft:block/calcite"
+  }
+}
