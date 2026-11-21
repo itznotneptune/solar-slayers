@@ -2,11 +2,13 @@ package dev.solarslayers.world;
 
 import dev.solarslayers.config.SlayersConfig;
 import dev.solarslayers.slayer.SidebarState;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
 
 /**
  * Darkens the bright, pale blocks of world 1 (the Grave Tyrant's slayer world) by {@link SlayersConfig#graveShade}
@@ -26,7 +28,7 @@ public final class GraveShade {
             Blocks.CUT_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE_SLAB, Blocks.CHISELED_RED_SANDSTONE,
             Blocks.SMOOTH_RED_SANDSTONE, Blocks.SMOOTH_RED_SANDSTONE_STAIRS, Blocks.SMOOTH_RED_SANDSTONE_SLAB,
             Blocks.BIRCH_PLANKS, Blocks.BIRCH_SLAB, Blocks.BIRCH_STAIRS, Blocks.BIRCH_FENCE, Blocks.BIRCH_TRAPDOOR,
-            Blocks.SMOOTH_QUARTZ, Blocks.CHISELED_QUARTZ_BLOCK, Blocks.CALCITE, Blocks.WHITE_WOOL,
+            Blocks.SMOOTH_QUARTZ, Blocks.CHISELED_QUARTZ_BLOCK, Blocks.CALCITE, Blocks.WOOL.white(),
     };
 
     /** Ticks the shade must stay unchanged before chunks are rebuilt, so dragging the slider rebuilds once. */
@@ -42,7 +44,8 @@ public final class GraveShade {
     private GraveShade() {}
 
     public static void register() {
-        ColorProviderRegistry.BLOCK.register((state, level, pos, tintIndex) -> PrismarineShade.color(shade), BLOCKS);
+        // 26.3: one tint source per tint index; the overrides only use index 0
+        BlockColorRegistry.register(List.of(state -> PrismarineShade.color(shade)), BLOCKS);
     }
 
     public static void tick(Minecraft mc) {
@@ -72,6 +75,6 @@ public final class GraveShade {
         if (++stableFor < SETTLE_TICKS || level == null) return;
         shade = want;
         pending = -1;
-        mc.levelRenderer.allChanged();
+        mc.levelExtractor.allChanged();
     }
 }
