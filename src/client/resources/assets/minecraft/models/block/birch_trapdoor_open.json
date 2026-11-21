@@ -1,0 +1,6 @@
+{
+  "parent": "solarslayers:block/tinted_template_orientable_trapdoor_open",
+  "textures": {
+    "texture": "minecraft:block/birch_trapdoor"
+  }
+}

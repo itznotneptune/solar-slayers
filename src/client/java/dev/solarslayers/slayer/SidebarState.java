@@ -56,6 +56,8 @@ public final class SidebarState {
     public String pityItem;
     public double pityHave = Double.NaN, pityNeed = Double.NaN;
     public int pityPct = -1;
+    /** A sidebar line names the Grave Tyrant: world 1's slayer, shown in that world only. */
+    public boolean graveTyrant;
     public String essenceText;   // as shown, e.g. "1.8k"
 
     private SidebarState() {}
@@ -71,6 +73,7 @@ public final class SidebarState {
             String clean = Txt.clean(raw);
             String n = Txt.norm(raw);
             if (n.isEmpty()) continue;
+            if (n.contains("grave tyrant")) graveTyrant = true;
 
             if (n.equals("slayer")) { inSlayer = true; continue; }
             if (n.equals("your quest")) { pending = "quest"; continue; }
@@ -148,6 +151,7 @@ public final class SidebarState {
 
     private void reset() {
         inSlayer = false;
+        graveTyrant = false;
         area = null;
         level = -1;
         noQuest = false;

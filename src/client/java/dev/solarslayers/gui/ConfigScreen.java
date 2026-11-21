@@ -135,6 +135,9 @@ public final class ConfigScreen extends Screen {
                 new Option.Slider("Prismarine Shade", "Darkens prismarine, prismarine bricks and dark prismarine (with their stairs, "
                         + "slabs and wall). 0% leaves them as they are, 100% makes them black.",
                         0, 100, "%", () -> c.prismarineShade, v -> c.prismarineShade = v),
+                new Option.Slider("Grave World Shade", "Darkens the bright blocks of world 1 (Grave Tyrant): sand, sandstone, "
+                        + "birch wood, quartz, calcite and white wool. Only in that world. 0% leaves them as they are.",
+                        0, 100, "%", () -> c.graveShade, v -> c.graveShade = v),
                 new Option.Toggle("Prism Laser Outline", "Hide the Prism Laser's rainbow particles (anyone's) and draw a thin "
                         + "hollow outline where the beam is instead.",
                         () -> c.prismLaserOutline, v -> c.prismLaserOutline = v),
