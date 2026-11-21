@@ -68,6 +68,8 @@ public final class SlayersConfig {
     public int prismarineShade = 0;
     /** How dark world 1's bright blocks (sand, sandstone, birch, quartz) are drawn there, percent. */
     public int graveShade = 40;
+    /** Height of the on-fire screen overlay, percent: 100 = vanilla, lower moves it down, 0 hides it. */
+    public int fireOverlay = 50;
     /** Replace the Prism Laser's particles with a hollow outline. */
     public boolean prismLaserOutline = true;
     /** Outline in the laser's rainbow (still, softer); off uses {@link #prismLaserColor}. */
@@ -140,6 +142,7 @@ public final class SlayersConfig {
         highlightOpacity = Math.max(20, Math.min(100, highlightOpacity));
         prismarineShade = Math.max(0, Math.min(100, prismarineShade));
         graveShade = Math.max(0, Math.min(100, graveShade));
+        fireOverlay = Math.max(0, Math.min(100, fireOverlay));
     }
 
     public static final class HudPos {
