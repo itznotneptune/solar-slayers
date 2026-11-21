@@ -1,0 +1,6 @@
+{
+  "parent": "solarslayers:block/tinted_fence_post",
+  "textures": {
+    "texture": "minecraft:block/birch_planks"
+  }
+}
